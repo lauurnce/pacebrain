@@ -6,3 +6,8 @@ Representing data in fewer dimensions while keeping the structure that matters. 
 
 - [Random forest](random-forest.md)
 - [Bootstrap](bootstrap.md)
+
+## See also
+
+- [Ensemble](ensemble.md)
+- [Bootstrap](bootstrap.md)
