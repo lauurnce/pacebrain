@@ -6,3 +6,8 @@ Halting training when validation loss has not improved for a set number of epoch
 
 - [Convergence](convergence.md)
 - [Optimizer](optimizer.md)
+
+## See also
+
+- [Epoch](epoch.md)
+- [Optimizer](optimizer.md)
