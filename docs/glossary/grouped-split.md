@@ -6,3 +6,8 @@ Splitting so that all records sharing an entity stay on one side. Without it the
 
 - [Feature engineering](feature-engineering.md)
 - [Min max scaling](min-max-scaling.md)
+
+## See also
+
+- [Outlier](outlier.md)
+- [Min max scaling](min-max-scaling.md)
