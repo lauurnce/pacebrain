@@ -6,3 +6,5 @@ The raw unnormalised score a model outputs before a sigmoid or softmax converts 
 
 - [Entropy](entropy.md)
 - [Loss function](loss-function.md)
+
+Logit interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
