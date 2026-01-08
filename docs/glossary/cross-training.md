@@ -6,3 +6,8 @@ Aerobic work in another discipline — cycling, swimming, elliptical — used to
 
 - [Hill repeats](hill-repeats.md)
 - [Shakeout](shakeout.md)
+
+## See also
+
+- [Dynamic stretching](dynamic-stretching.md)
+- [Shakeout](shakeout.md)
