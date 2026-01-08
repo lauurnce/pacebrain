@@ -6,3 +6,5 @@ The scalar a model is trained to minimise, which defines what "wrong" means for 
 
 - [Maximum likelihood](maximum-likelihood.md)
 - [Entropy](entropy.md)
+
+In PaceBrain, Loss function matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
