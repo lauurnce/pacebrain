@@ -6,3 +6,8 @@ A value chosen before training rather than learned from data, such as learning r
 
 - [Transfer learning](transfer-learning.md)
 - [Determinism](determinism.md)
+
+## See also
+
+- [Inference](inference.md)
+- [Determinism](determinism.md)
