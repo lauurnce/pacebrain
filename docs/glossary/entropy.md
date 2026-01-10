@@ -6,3 +6,5 @@ A measure of uncertainty in a distribution, maximal when every outcome is equall
 
 - [Logit](logit.md)
 - [Loss function](loss-function.md)
+
+In PaceBrain, Entropy matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
