@@ -6,3 +6,5 @@ Controlled movements through range of motion before running, as opposed to holdi
 
 - [Easy run](easy-run.md)
 - [Cross training](cross-training.md)
+
+Dynamic stretching interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
