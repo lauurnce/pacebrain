@@ -6,3 +6,8 @@ Training at elevation to stimulate red blood cell production. The complication i
 
 - [Hydration](hydration.md)
 - [Glycogen](glycogen.md)
+
+## See also
+
+- [Detraining](detraining.md)
+- [Glycogen](glycogen.md)
