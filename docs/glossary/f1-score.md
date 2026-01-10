@@ -6,3 +6,8 @@ The harmonic mean of [[precision]] and [[recall]], collapsing the tradeoff betwe
 
 - [Confusion matrix](confusion-matrix.md)
 - [Noise floor](noise-floor.md)
+
+## See also
+
+- [Auc roc](auc-roc.md)
+- [Noise floor](noise-floor.md)
