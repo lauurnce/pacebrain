@@ -6,3 +6,5 @@ Running the second half of a race faster than the first. Usually the outcome of 
 
 - [Chip time](chip-time.md)
 - [Race weight](race-weight.md)
+
+In PaceBrain terms, Negative split shows up whenever weekly logs are turned into features — the textbook definition is crisp, real training data is not, and the gap is where the modelling lives.
