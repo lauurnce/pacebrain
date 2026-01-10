@@ -6,3 +6,8 @@ Performance plotted against training set size. It answers the question that matt
 
 - [F1 score](f1-score.md)
 - [Accuracy](accuracy.md)
+
+## See also
+
+- [Noise floor](noise-floor.md)
+- [Accuracy](accuracy.md)
