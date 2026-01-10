@@ -6,3 +6,8 @@ Expanding a training set with label-preserving transformations of existing examp
 
 - [Bias variance tradeoff](bias-variance-tradeoff.md)
 - [Overfitting](overfitting.md)
+
+## See also
+
+- [Weight decay](weight-decay.md)
+- [Overfitting](overfitting.md)
