@@ -8,3 +8,8 @@ A run at conversational effort, making up the large majority of a well-structure
 - [Hill repeats](hill-repeats.md)
 
 When reasoning about Easy run, remember the measurement chain: sensor, summary statistic, weekly aggregate. Error compounds at each hop and ends up labelled signal.
+
+## See also
+
+- [Progression run](progression-run.md)
+- [Hill repeats](hill-repeats.md)
