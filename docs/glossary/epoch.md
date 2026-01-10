@@ -6,3 +6,8 @@ One full pass over the training set. Not a unit of progress in itself, since wha
 
 - [Gradient](gradient.md)
 - [Early stopping](early-stopping.md)
+
+## See also
+
+- [Fine tuning](fine-tuning.md)
+- [Early stopping](early-stopping.md)
