@@ -3,3 +3,8 @@
 Easy running after hard work to return the body gradually to rest. Its measurable effects are modest, and its real value is that it reliably converts a hard session into additional easy volume.
 
 The failure mode to watch with Cool down is silent optimism: results improve on the validation set for reasons that will not survive contact with next month's data.
+
+## See also
+
+- [Recovery run](recovery-run.md)
+- [Hill repeats](hill-repeats.md)
