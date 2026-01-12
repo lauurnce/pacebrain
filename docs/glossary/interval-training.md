@@ -6,3 +6,8 @@ Repeated hard efforts separated by recovery. Allows more total time at high inte
 
 - [Steady state](steady-state.md)
 - [Heart rate zones](heart-rate-zones.md)
+
+## See also
+
+- [Lactate threshold](lactate-threshold.md)
+- [Heart rate zones](heart-rate-zones.md)
