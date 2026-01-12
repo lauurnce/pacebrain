@@ -6,3 +6,8 @@ A simple reference the model must beat to justify itself. Only meaningful if giv
 
 - [Recall](recall.md)
 - [Accuracy](accuracy.md)
+
+## See also
+
+- [Brier score](brier-score.md)
+- [Accuracy](accuracy.md)
