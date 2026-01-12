@@ -11,3 +11,5 @@ Training at elevation to stimulate red blood cell production. The complication i
 
 - [Detraining](detraining.md)
 - [Glycogen](glycogen.md)
+
+Practical trap with Altitude training: comparing raw values across athletes without adjusting for training age, volume and conditions turns a measurement into a leaderboard.
