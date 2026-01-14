@@ -6,3 +6,8 @@ How two variables move together, positive when they rise in step. Its magnitude 
 
 - [Standard deviation](standard-deviation.md)
 - [Variance](variance.md)
+
+## See also
+
+- [Variance](variance.md)
+- [Standard deviation](standard-deviation.md)
