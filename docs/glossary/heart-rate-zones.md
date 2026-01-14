@@ -6,3 +6,5 @@ Effort bands defined as percentages of maximum or threshold heart rate, used to 
 
 - [Vo2max](vo2max.md)
 - [Rpe](rpe.md)
+
+When reasoning about Heart rate zones, remember the measurement chain: sensor, summary statistic, weekly aggregate. Error compounds at each hop and ends up labelled signal.
