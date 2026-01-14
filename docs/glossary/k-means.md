@@ -8,3 +8,8 @@ The failure mode to watch with K means is silent optimism: results improve on th
 
 - [Random forest](random-forest.md)
 - [Clustering](clustering.md)
+
+## See also
+
+- [K nearest neighbours](k-nearest-neighbours.md)
+- [Clustering](clustering.md)
