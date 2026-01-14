@@ -11,3 +11,5 @@ Performance plotted against training set size. It answers the question that matt
 
 - [Noise floor](noise-floor.md)
 - [Accuracy](accuracy.md)
+
+In PaceBrain, Learning curve matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
