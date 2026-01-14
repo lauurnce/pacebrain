@@ -11,3 +11,5 @@ The mean squared error of predicted probabilities against outcomes, rewarding bo
 
 - [Baseline](baseline.md)
 - [Precision](precision.md)
+
+The failure mode to watch with Brier score is silent optimism: results improve on the validation set for reasons that will not survive contact with next month's data.
