@@ -6,3 +6,8 @@ Elapsed time from crossing the start mat to crossing the finish mat, as opposed 
 
 - [Taper](taper.md)
 - [Periodization](periodization.md)
+
+## See also
+
+- [Race weight](race-weight.md)
+- [Periodization](periodization.md)
