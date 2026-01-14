@@ -6,3 +6,5 @@ Raising carbohydrate intake in the days before a long race to maximise [[glycoge
 
 - [Negative split](negative-split.md)
 - [Splits](splits.md)
+
+Carb loading interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
