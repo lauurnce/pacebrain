@@ -8,3 +8,8 @@ Boosting interacts strongly with dataset size here; behaviours that are footnote
 
 - [Dimensionality reduction](dimensionality-reduction.md)
 - [K nearest neighbours](k-nearest-neighbours.md)
+
+## See also
+
+- [Clustering](clustering.md)
+- [K nearest neighbours](k-nearest-neighbours.md)
