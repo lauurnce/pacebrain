@@ -11,3 +11,5 @@ Aerobic work in another discipline — cycling, swimming, elliptical — used to
 
 - [Dynamic stretching](dynamic-stretching.md)
 - [Shakeout](shakeout.md)
+
+When reasoning about Cross training, remember the measurement chain: sensor, summary statistic, weekly aggregate. Error compounds at each hop and ends up labelled signal.
