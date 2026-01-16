@@ -8,3 +8,8 @@ Repeated heat exposure producing earlier sweating, higher plasma volume and lowe
 - [Cadence](cadence.md)
 
 In PaceBrain terms, Heat acclimation shows up whenever weekly logs are turned into features — the textbook definition is crisp, real training data is not, and the gap is where the modelling lives.
+
+## See also
+
+- [Training load](training-load.md)
+- [Cadence](cadence.md)
