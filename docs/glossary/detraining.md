@@ -6,3 +6,8 @@ The loss of adaptation during extended inactivity. It is asymmetric and worth kn
 
 - [Ground contact time](ground-contact-time.md)
 - [Hydration](hydration.md)
+
+## See also
+
+- [Heart rate variability](heart-rate-variability.md)
+- [Hydration](hydration.md)
