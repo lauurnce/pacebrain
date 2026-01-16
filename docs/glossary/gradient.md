@@ -6,3 +6,8 @@ The vector of partial derivatives of the loss with respect to every parameter. I
 
 - [Determinism](determinism.md)
 - [Optimizer](optimizer.md)
+
+## See also
+
+- [Momentum](momentum.md)
+- [Optimizer](optimizer.md)
