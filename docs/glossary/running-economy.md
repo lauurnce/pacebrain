@@ -6,3 +6,5 @@ How much oxygen a runner uses to hold a given submaximal pace — the efficiency
 
 - [Supercompensation](supercompensation.md)
 - [Stress fracture](stress-fracture.md)
+
+In PaceBrain terms, Running economy shows up whenever weekly logs are turned into features — the textbook definition is crisp, real training data is not, and the gap is where the modelling lives.
