@@ -8,3 +8,8 @@ The failure mode to watch with Correlation is silent optimism: results improve o
 
 - [Hypothesis test](hypothesis-test.md)
 - [Confidence interval](confidence-interval.md)
+
+## See also
+
+- [Confidence interval](confidence-interval.md)
+- [Hypothesis test](hypothesis-test.md)
