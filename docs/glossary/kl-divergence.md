@@ -6,3 +6,8 @@ The gap between cross-entropy and the true distribution's own entropy, measuring
 
 - [Loss function](loss-function.md)
 - [Entropy](entropy.md)
+
+## See also
+
+- [Maximum likelihood](maximum-likelihood.md)
+- [Entropy](entropy.md)
