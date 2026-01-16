@@ -6,3 +6,8 @@ The intensity above which blood lactate accumulates faster than it can be cleare
 
 - [Tempo run](tempo-run.md)
 - [Max heart rate](max-heart-rate.md)
+
+## See also
+
+- [Interval training](interval-training.md)
+- [Max heart rate](max-heart-rate.md)
