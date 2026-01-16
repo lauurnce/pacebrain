@@ -6,3 +6,5 @@ A short very easy run the day before a race or after travel. It is about circula
 
 - [Long run](long-run.md)
 - [Hill repeats](hill-repeats.md)
+
+Shakeout interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
