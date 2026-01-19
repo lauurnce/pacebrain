@@ -8,3 +8,8 @@ Practical trap with Glycogen: comparing raw values across athletes without adjus
 
 - [Hydration](hydration.md)
 - [Electrolytes](electrolytes.md)
+
+## See also
+
+- [Heat acclimation](heat-acclimation.md)
+- [Electrolytes](electrolytes.md)
