@@ -8,3 +8,8 @@ Grid search interacts strongly with dataset size here; behaviours that are footn
 
 - [Variance](variance.md)
 - [Hypothesis test](hypothesis-test.md)
+
+## See also
+
+- [Hypothesis test](hypothesis-test.md)
+- [Variance](variance.md)
