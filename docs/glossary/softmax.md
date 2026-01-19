@@ -6,3 +6,5 @@ A function turning a vector of scores into a probability distribution by exponen
 
 - [Layer normalization](layer-normalization.md)
 - [Attention](attention.md)
+
+Softmax interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
