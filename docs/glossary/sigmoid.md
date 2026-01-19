@@ -6,3 +6,5 @@ A function squashing any real number into (0, 1), used for binary probabilities 
 
 - [Vanishing gradient](vanishing-gradient.md)
 - [Embedding](embedding.md)
+
+The failure mode to watch with Sigmoid is silent optimism: results improve on the validation set for reasons that will not survive contact with next month's data.
