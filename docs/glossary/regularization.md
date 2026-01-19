@@ -6,3 +6,5 @@ Any constraint that trades training fit for generalisation — weight decay, dro
 
 - [Underfitting](underfitting.md)
 - [Overfitting](overfitting.md)
+
+In PaceBrain, Regularization matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
