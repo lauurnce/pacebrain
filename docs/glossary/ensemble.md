@@ -6,3 +6,8 @@ Combining predictions from several models, typically by averaging. It reliably i
 
 - [Clustering](clustering.md)
 - [Dimensionality reduction](dimensionality-reduction.md)
+
+## See also
+
+- [Bootstrap](bootstrap.md)
+- [Dimensionality reduction](dimensionality-reduction.md)
