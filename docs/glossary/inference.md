@@ -8,3 +8,8 @@ In PaceBrain, Inference matters at exactly the boundary between baselines and fa
 
 - [Fine tuning](fine-tuning.md)
 - [Epoch](epoch.md)
+
+## See also
+
+- [Determinism](determinism.md)
+- [Epoch](epoch.md)
