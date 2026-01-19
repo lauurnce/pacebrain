@@ -6,3 +6,8 @@ Rescaling gradients whose norm exceeds a threshold before the optimiser step, bo
 
 - [Layer normalization](layer-normalization.md)
 - [Transformer](transformer.md)
+
+## See also
+
+- [Batch normalization](batch-normalization.md)
+- [Transformer](transformer.md)
