@@ -8,3 +8,8 @@ The failure mode to watch with Feature importance is silent optimism: results im
 
 - [Data leakage](data-leakage.md)
 - [Standardization](standardization.md)
+
+## See also
+
+- [Outlier](outlier.md)
+- [Standardization](standardization.md)
