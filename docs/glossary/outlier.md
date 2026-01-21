@@ -6,3 +6,5 @@ An observation far from the bulk of the data. The decision that matters is not d
 
 - [Feature engineering](feature-engineering.md)
 - [Grouped split](grouped-split.md)
+
+In PaceBrain, Outlier matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
