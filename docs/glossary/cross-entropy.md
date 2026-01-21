@@ -6,3 +6,8 @@ The average number of bits needed to encode samples from one distribution using 
 
 - [Logit](logit.md)
 - [Likelihood](likelihood.md)
+
+## See also
+
+- [Maximum likelihood](maximum-likelihood.md)
+- [Likelihood](likelihood.md)
