@@ -6,3 +6,5 @@ An ensemble of decision trees trained on bootstrap samples with a random feature
 
 - [Dimensionality reduction](dimensionality-reduction.md)
 - [Decision tree](decision-tree.md)
+
+The failure mode to watch with Random forest is silent optimism: results improve on the validation set for reasons that will not survive contact with next month's data.
