@@ -6,3 +6,5 @@ Heart rate measured at complete rest, falling as aerobic fitness improves. Its d
 
 - [Altitude training](altitude-training.md)
 - [Glycogen](glycogen.md)
+
+Practical trap with Resting heart rate: comparing raw values across athletes without adjusting for training age, volume and conditions turns a measurement into a leaderboard.
