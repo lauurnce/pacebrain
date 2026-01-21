@@ -6,3 +6,8 @@ Training models on bootstrap resamples of the data and averaging them, reducing 
 
 - [Decision tree](decision-tree.md)
 - [Boosting](boosting.md)
+
+## See also
+
+- [Bootstrap](bootstrap.md)
+- [Boosting](boosting.md)
