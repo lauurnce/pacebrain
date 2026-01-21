@@ -11,3 +11,5 @@ A simple reference the model must beat to justify itself. Only meaningful if giv
 
 - [Brier score](brier-score.md)
 - [Accuracy](accuracy.md)
+
+Baseline interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
