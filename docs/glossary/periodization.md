@@ -6,3 +6,5 @@ Structuring training into blocks with different emphases — base, build, peak, 
 
 - [Taper](taper.md)
 - [Race weight](race-weight.md)
+
+In PaceBrain, Periodization matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
