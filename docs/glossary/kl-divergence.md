@@ -11,3 +11,5 @@ The gap between cross-entropy and the true distribution's own entropy, measuring
 
 - [Maximum likelihood](maximum-likelihood.md)
 - [Entropy](entropy.md)
+
+Kl divergence interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
