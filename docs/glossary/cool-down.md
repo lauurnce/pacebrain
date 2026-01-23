@@ -8,3 +8,8 @@ The failure mode to watch with Cool down is silent optimism: results improve on 
 
 - [Recovery run](recovery-run.md)
 - [Hill repeats](hill-repeats.md)
+
+## See also
+
+- [Strength training](strength-training.md)
+- [Hill repeats](hill-repeats.md)
