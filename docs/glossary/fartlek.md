@@ -8,3 +8,8 @@ Swedish for "speed play": continuous running with unstructured surges of faster 
 - [Cross training](cross-training.md)
 
 Fartlek interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
+
+## See also
+
+- [Recovery run](recovery-run.md)
+- [Cross training](cross-training.md)
