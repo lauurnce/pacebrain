@@ -11,3 +11,5 @@ A value chosen before training rather than learned from data, such as learning r
 
 - [Inference](inference.md)
 - [Determinism](determinism.md)
+
+In PaceBrain, Hyperparameter matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
