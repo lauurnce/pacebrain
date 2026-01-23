@@ -8,3 +8,8 @@ Fitting each new tree to the gradient of the loss left by the ensemble so far. I
 - [Boosting](boosting.md)
 
 In PaceBrain, Gradient boosting matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
+
+## See also
+
+- [K means](k-means.md)
+- [Boosting](boosting.md)
