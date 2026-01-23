@@ -11,3 +11,5 @@ One full pass over the training set. Not a unit of progress in itself, since wha
 
 - [Fine tuning](fine-tuning.md)
 - [Early stopping](early-stopping.md)
+
+Epoch interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
