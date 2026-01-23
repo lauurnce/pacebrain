@@ -6,3 +6,8 @@ The variation in time between consecutive heartbeats, reflecting autonomic balan
 
 - [Running economy](running-economy.md)
 - [Overreaching](overreaching.md)
+
+## See also
+
+- [Altitude training](altitude-training.md)
+- [Overreaching](overreaching.md)
