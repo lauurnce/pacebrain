@@ -6,3 +6,5 @@ Filling missing values with estimates so a model can consume the row. Whether a 
 
 - [Validation set](validation-set.md)
 - [Permutation importance](permutation-importance.md)
+
+Imputation interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
