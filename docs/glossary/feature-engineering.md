@@ -8,3 +8,8 @@ In PaceBrain, Feature engineering matters at exactly the boundary between baseli
 
 - [Feature importance](feature-importance.md)
 - [Permutation importance](permutation-importance.md)
+
+## See also
+
+- [Normalization](normalization.md)
+- [Permutation importance](permutation-importance.md)
