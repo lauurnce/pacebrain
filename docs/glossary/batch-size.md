@@ -8,3 +8,8 @@ In PaceBrain, Batch size matters at exactly the boundary between baselines and f
 
 - [Momentum](momentum.md)
 - [Fine tuning](fine-tuning.md)
+
+## See also
+
+- [Convergence](convergence.md)
+- [Fine tuning](fine-tuning.md)
