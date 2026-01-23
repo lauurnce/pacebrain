@@ -8,3 +8,8 @@ Confusion matrix interacts strongly with dataset size here; behaviours that are 
 
 - [Brier score](brier-score.md)
 - [Accuracy](accuracy.md)
+
+## See also
+
+- [Precision](precision.md)
+- [Accuracy](accuracy.md)
