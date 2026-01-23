@@ -11,3 +11,5 @@ Training models on bootstrap resamples of the data and averaging them, reducing 
 
 - [Bootstrap](bootstrap.md)
 - [Boosting](boosting.md)
+
+Bagging interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
