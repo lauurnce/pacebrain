@@ -6,3 +6,8 @@ Repeated hard efforts up a gradient with easy recovery back down. The incline li
 
 - [Dynamic stretching](dynamic-stretching.md)
 - [Strides](strides.md)
+
+## See also
+
+- [Strength training](strength-training.md)
+- [Strides](strides.md)
