@@ -8,3 +8,8 @@ Controlled movements through range of motion before running, as opposed to holdi
 - [Cross training](cross-training.md)
 
 Dynamic stretching interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
+
+## See also
+
+- [Cool down](cool-down.md)
+- [Cross training](cross-training.md)
