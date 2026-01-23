@@ -6,3 +6,5 @@ Of everything the model flagged as positive, the fraction that genuinely was. Th
 
 - [Confusion matrix](confusion-matrix.md)
 - [Baseline](baseline.md)
+
+In PaceBrain, Precision matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
