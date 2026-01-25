@@ -8,3 +8,8 @@ A range constructed so that, over repeated sampling, a stated proportion of such
 - [P value](p-value.md)
 
 Confidence interval interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
+
+## See also
+
+- [P value](p-value.md)
+- [Central limit theorem](central-limit-theorem.md)
