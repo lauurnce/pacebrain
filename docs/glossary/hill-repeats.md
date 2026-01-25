@@ -11,3 +11,5 @@ Repeated hard efforts up a gradient with easy recovery back down. The incline li
 
 - [Strength training](strength-training.md)
 - [Strides](strides.md)
+
+In PaceBrain terms, Hill repeats shows up whenever weekly logs are turned into features — the textbook definition is crisp, real training data is not, and the gap is where the modelling lives.
