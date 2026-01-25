@@ -8,3 +8,8 @@ The failure mode to watch with Central limit theorem is silent optimism: results
 
 - [Correlation](correlation.md)
 - [Variance](variance.md)
+
+## See also
+
+- [Variance](variance.md)
+- [Correlation](correlation.md)
