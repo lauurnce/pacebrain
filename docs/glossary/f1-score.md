@@ -11,3 +11,5 @@ The harmonic mean of [[precision]] and [[recall]], collapsing the tradeoff betwe
 
 - [Auc roc](auc-roc.md)
 - [Noise floor](noise-floor.md)
+
+F1 score interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
