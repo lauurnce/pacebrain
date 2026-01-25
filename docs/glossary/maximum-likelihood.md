@@ -6,3 +6,5 @@ Choosing the parameters that make the observed data most probable. Most standard
 
 - [Cross entropy](cross-entropy.md)
 - [Loss function](loss-function.md)
+
+Maximum likelihood interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
