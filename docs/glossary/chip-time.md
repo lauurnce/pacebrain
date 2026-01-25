@@ -11,3 +11,5 @@ Elapsed time from crossing the start mat to crossing the finish mat, as opposed 
 
 - [Race weight](race-weight.md)
 - [Periodization](periodization.md)
+
+Practical trap with Chip time: comparing raw values across athletes without adjusting for training age, volume and conditions turns a measurement into a leaderboard.
