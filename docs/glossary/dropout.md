@@ -8,3 +8,8 @@ In PaceBrain, Dropout matters at exactly the boundary between baselines and fanc
 
 - [Embedding](embedding.md)
 - [Softmax](softmax.md)
+
+## See also
+
+- [Exploding gradient](exploding-gradient.md)
+- [Softmax](softmax.md)
