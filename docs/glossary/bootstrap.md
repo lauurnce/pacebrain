@@ -8,3 +8,8 @@ The failure mode to watch with Bootstrap is silent optimism: results improve on 
 
 - [Random forest](random-forest.md)
 - [Gradient boosting](gradient-boosting.md)
+
+## See also
+
+- [Clustering](clustering.md)
+- [Gradient boosting](gradient-boosting.md)
