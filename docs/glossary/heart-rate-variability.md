@@ -11,3 +11,5 @@ The variation in time between consecutive heartbeats, reflecting autonomic balan
 
 - [Altitude training](altitude-training.md)
 - [Overreaching](overreaching.md)
+
+In PaceBrain terms, Heart rate variability shows up whenever weekly logs are turned into features — the textbook definition is crisp, real training data is not, and the gap is where the modelling lives.
