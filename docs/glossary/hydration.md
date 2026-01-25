@@ -6,3 +6,8 @@ Maintaining fluid balance during training and racing. Both directions carry risk
 
 - [Supercompensation](supercompensation.md)
 - [Stress fracture](stress-fracture.md)
+
+## See also
+
+- [Electrolytes](electrolytes.md)
+- [Stress fracture](stress-fracture.md)
