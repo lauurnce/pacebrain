@@ -11,3 +11,5 @@ The loss of adaptation during extended inactivity. It is asymmetric and worth kn
 
 - [Heart rate variability](heart-rate-variability.md)
 - [Hydration](hydration.md)
+
+When reasoning about Detraining, remember the measurement chain: sensor, summary statistic, weekly aggregate. Error compounds at each hop and ends up labelled signal.
