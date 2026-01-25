@@ -8,3 +8,8 @@ In PaceBrain, Embedding matters at exactly the boundary between baselines and fa
 
 - [Attention](attention.md)
 - [Sigmoid](sigmoid.md)
+
+## See also
+
+- [Batch normalization](batch-normalization.md)
+- [Sigmoid](sigmoid.md)
