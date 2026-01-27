@@ -6,3 +6,5 @@ A mechanism computing a weighted sum of values, where the weights come from the 
 
 - [Softmax](softmax.md)
 - [Transformer](transformer.md)
+
+The failure mode to watch with Attention is silent optimism: results improve on the validation set for reasons that will not survive contact with next month's data.
