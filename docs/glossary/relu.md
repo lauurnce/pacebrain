@@ -6,3 +6,5 @@
 
 - [Softmax](softmax.md)
 - [Exploding gradient](exploding-gradient.md)
+
+In PaceBrain, Relu matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
