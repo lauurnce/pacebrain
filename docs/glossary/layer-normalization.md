@@ -8,3 +8,8 @@ Normalising each sample across its own features rather than across the batch. Be
 - [Batch normalization](batch-normalization.md)
 
 Layer normalization interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
+
+## See also
+
+- [Vanishing gradient](vanishing-gradient.md)
+- [Batch normalization](batch-normalization.md)
