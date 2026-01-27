@@ -8,3 +8,8 @@ The failure mode to watch with Clustering is silent optimism: results improve on
 
 - [K means](k-means.md)
 - [Pca](pca.md)
+
+## See also
+
+- [Bootstrap](bootstrap.md)
+- [Pca](pca.md)
