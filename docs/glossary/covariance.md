@@ -11,3 +11,5 @@ How two variables move together, positive when they rise in step. Its magnitude 
 
 - [Variance](variance.md)
 - [Standard deviation](standard-deviation.md)
+
+Covariance interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
