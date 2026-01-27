@@ -6,3 +6,8 @@ The area under the true-positive against false-positive curve, equal to the prob
 
 - [F1 score](f1-score.md)
 - [R squared](r-squared.md)
+
+## See also
+
+- [Precision](precision.md)
+- [R squared](r-squared.md)
