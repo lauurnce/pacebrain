@@ -8,3 +8,8 @@ Hypothesis test interacts strongly with dataset size here; behaviours that are f
 
 - [Variance](variance.md)
 - [Monte carlo](monte-carlo.md)
+
+## See also
+
+- [Monte carlo](monte-carlo.md)
+- [Variance](variance.md)
