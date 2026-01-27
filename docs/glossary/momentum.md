@@ -6,3 +6,5 @@ An optimiser term that accumulates a running average of past gradients so the st
 
 - [Early stopping](early-stopping.md)
 - [Gradient](gradient.md)
+
+In PaceBrain, Momentum matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
