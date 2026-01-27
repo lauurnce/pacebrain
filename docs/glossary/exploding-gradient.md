@@ -6,3 +6,8 @@ The opposite failure — repeated multiplication by factors above one drives gra
 
 - [Gradient clipping](gradient-clipping.md)
 - [Dropout](dropout.md)
+
+## See also
+
+- [Transformer](transformer.md)
+- [Dropout](dropout.md)
