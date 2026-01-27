@@ -11,3 +11,5 @@ The area under the true-positive against false-positive curve, equal to the prob
 
 - [Precision](precision.md)
 - [R squared](r-squared.md)
+
+Auc roc interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
