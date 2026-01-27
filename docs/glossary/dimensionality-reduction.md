@@ -11,3 +11,5 @@ Representing data in fewer dimensions while keeping the structure that matters. 
 
 - [Ensemble](ensemble.md)
 - [Bootstrap](bootstrap.md)
+
+Dimensionality reduction interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
