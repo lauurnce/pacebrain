@@ -11,3 +11,5 @@ The vector of partial derivatives of the loss with respect to every parameter. I
 
 - [Momentum](momentum.md)
 - [Optimizer](optimizer.md)
+
+In PaceBrain, Gradient matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
