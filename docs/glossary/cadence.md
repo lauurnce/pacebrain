@@ -8,3 +8,8 @@ In PaceBrain terms, Cadence shows up whenever weekly logs are turned into featur
 
 - [Running economy](running-economy.md)
 - [Glycogen](glycogen.md)
+
+## See also
+
+- [Altitude training](altitude-training.md)
+- [Glycogen](glycogen.md)
