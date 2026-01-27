@@ -6,3 +6,5 @@ Training stress accumulating faster than recovery. Short term it is a deliberate
 
 - [Supercompensation](supercompensation.md)
 - [Ground contact time](ground-contact-time.md)
+
+Practical trap with Overreaching: comparing raw values across athletes without adjusting for training age, volume and conditions turns a measurement into a leaderboard.
