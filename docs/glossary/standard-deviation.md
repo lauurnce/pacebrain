@@ -6,3 +6,5 @@ The square root of [[variance]], returning the measure to the units of the data.
 
 - [Correlation](correlation.md)
 - [Variance](variance.md)
+
+Standard deviation interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
