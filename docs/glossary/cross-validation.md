@@ -8,3 +8,8 @@ Cross validation interacts strongly with dataset size here; behaviours that are 
 
 - [Variance](variance.md)
 - [Residual](residual.md)
+
+## See also
+
+- [Residual](residual.md)
+- [Variance](variance.md)
