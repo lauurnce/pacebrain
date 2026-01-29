@@ -11,3 +11,5 @@ Rescaling gradients whose norm exceeds a threshold before the optimiser step, bo
 
 - [Batch normalization](batch-normalization.md)
 - [Transformer](transformer.md)
+
+Gradient clipping interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
