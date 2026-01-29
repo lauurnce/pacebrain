@@ -11,3 +11,5 @@ Combining predictions from several models, typically by averaging. It reliably i
 
 - [Bootstrap](bootstrap.md)
 - [Dimensionality reduction](dimensionality-reduction.md)
+
+In PaceBrain, Ensemble matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
