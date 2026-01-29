@@ -8,3 +8,8 @@ A mechanism computing a weighted sum of values, where the weights come from the 
 - [Transformer](transformer.md)
 
 The failure mode to watch with Attention is silent optimism: results improve on the validation set for reasons that will not survive contact with next month's data.
+
+## See also
+
+- [Sigmoid](sigmoid.md)
+- [Transformer](transformer.md)
