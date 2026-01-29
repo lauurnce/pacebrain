@@ -8,3 +8,8 @@ Ground contact time interacts strongly with dataset size here; behaviours that a
 
 - [Electrolytes](electrolytes.md)
 - [Running economy](running-economy.md)
+
+## See also
+
+- [Supercompensation](supercompensation.md)
+- [Running economy](running-economy.md)
