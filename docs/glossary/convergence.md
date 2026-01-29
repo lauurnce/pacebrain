@@ -8,3 +8,8 @@ The failure mode to watch with Convergence is silent optimism: results improve o
 
 - [Gradient](gradient.md)
 - [Inference](inference.md)
+
+## See also
+
+- [Determinism](determinism.md)
+- [Inference](inference.md)
