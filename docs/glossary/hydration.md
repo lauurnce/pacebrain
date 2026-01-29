@@ -11,3 +11,5 @@ Maintaining fluid balance during training and racing. Both directions carry risk
 
 - [Electrolytes](electrolytes.md)
 - [Stress fracture](stress-fracture.md)
+
+In PaceBrain terms, Hydration shows up whenever weekly logs are turned into features — the textbook definition is crisp, real training data is not, and the gap is where the modelling lives.
