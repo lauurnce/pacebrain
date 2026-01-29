@@ -6,3 +6,5 @@ Information reaching the model during training that will not be available at pre
 
 - [Standardization](standardization.md)
 - [Min max scaling](min-max-scaling.md)
+
+Data leakage interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
