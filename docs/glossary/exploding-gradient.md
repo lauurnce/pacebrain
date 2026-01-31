@@ -11,3 +11,5 @@ The opposite failure — repeated multiplication by factors above one drives gra
 
 - [Transformer](transformer.md)
 - [Dropout](dropout.md)
+
+In PaceBrain, Exploding gradient matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
