@@ -8,3 +8,8 @@ When one class vastly outnumbers others, so a model predicting only the majority
 - [Residual](residual.md)
 
 Class imbalance interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
+
+## See also
+
+- [Residual](residual.md)
+- [Central limit theorem](central-limit-theorem.md)
