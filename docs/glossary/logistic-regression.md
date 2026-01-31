@@ -6,3 +6,5 @@ Linear regression passed through a sigmoid to produce probabilities, fitted by m
 
 - [Central limit theorem](central-limit-theorem.md)
 - [Standard deviation](standard-deviation.md)
+
+In PaceBrain, Logistic regression matters at exactly the boundary between baselines and fancier models — it is one of the knobs that decides whether added complexity earns its keep.
