@@ -8,3 +8,8 @@ In PaceBrain, K nearest neighbours matters at exactly the boundary between basel
 
 - [Pca](pca.md)
 - [Decision tree](decision-tree.md)
+
+## See also
+
+- [Random forest](random-forest.md)
+- [Decision tree](decision-tree.md)
