@@ -11,3 +11,5 @@ Halting training when validation loss has not improved for a set number of epoch
 
 - [Epoch](epoch.md)
 - [Optimizer](optimizer.md)
+
+Early stopping interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
