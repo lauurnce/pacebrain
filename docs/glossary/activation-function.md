@@ -8,3 +8,8 @@ In PaceBrain, Activation function matters at exactly the boundary between baseli
 
 - [Variance](variance.md)
 - [Confidence interval](confidence-interval.md)
+
+## See also
+
+- [Confidence interval](confidence-interval.md)
+- [Variance](variance.md)
