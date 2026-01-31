@@ -8,3 +8,8 @@ In PaceBrain terms, Bonking shows up whenever weekly logs are turned into featur
 
 - [Periodization](periodization.md)
 - [Race weight](race-weight.md)
+
+## See also
+
+- [Taper](taper.md)
+- [Race weight](race-weight.md)
