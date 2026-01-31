@@ -8,3 +8,8 @@ In PaceBrain, Anaerobic threshold matters at exactly the boundary between baseli
 
 - [Aerobic base](aerobic-base.md)
 - [Vo2max](vo2max.md)
+
+## See also
+
+- [Heart rate zones](heart-rate-zones.md)
+- [Vo2max](vo2max.md)
