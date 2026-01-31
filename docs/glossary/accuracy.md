@@ -8,3 +8,8 @@ Accuracy interacts strongly with dataset size here; behaviours that are footnote
 
 - [Learning curve](learning-curve.md)
 - [Calibration](calibration.md)
+
+## See also
+
+- [F1 score](f1-score.md)
+- [Calibration](calibration.md)
