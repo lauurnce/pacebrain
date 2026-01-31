@@ -8,3 +8,8 @@ Calibration interacts strongly with dataset size here; behaviours that are footn
 
 - [Auc roc](auc-roc.md)
 - [F1 score](f1-score.md)
+
+## See also
+
+- [Brier score](brier-score.md)
+- [F1 score](f1-score.md)
