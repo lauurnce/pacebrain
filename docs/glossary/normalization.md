@@ -6,3 +6,5 @@ Rescaling features to comparable ranges, commonly by subtracting the mean and di
 
 - [Test set](test-set.md)
 - [Feature importance](feature-importance.md)
+
+Normalization interacts strongly with dataset size here; behaviours that are footnote-level on benchmarks are headline-level on a few hundred athlete-weeks.
