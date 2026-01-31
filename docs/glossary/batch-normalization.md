@@ -8,3 +8,8 @@ Batch normalization interacts strongly with dataset size here; behaviours that a
 
 - [Sigmoid](sigmoid.md)
 - [Embedding](embedding.md)
+
+## See also
+
+- [Attention](attention.md)
+- [Embedding](embedding.md)
