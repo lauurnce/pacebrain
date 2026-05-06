@@ -1,0 +1,3 @@
+# KL divergence
+
+The gap between cross-entropy and the true distribution's own entropy, measuring how far one distribution sits from another. It is not symmetric, so swapping the arguments gives a different number and answers a different question.
