@@ -122,6 +122,37 @@ class RunningDataset(Dataset):
         return self.X[idx], self.y[idx]
 
 
+def make_datasets(
+    df: pd.DataFrame,
+    val_fraction: float = 0.2,
+    seed: int = 42,
+) -> tuple["RunningDataset", "RunningDataset", StandardScaler]:
+    """
+    Split df and return train/val RunningDatasets with a shared scaler.
+
+    Key rule: fit the StandardScaler on training rows only, then apply
+    it to val.  Fitting on the full dataset would leak val statistics
+    into the scaler (mean/std), which means the model sees val info
+    during training — a subtle but real form of data leakage.
+
+    Returns:
+        train_ds, val_ds, scaler
+        (scaler is exposed so predict.py can normalize new inputs the same way)
+    """
+    n = len(df)
+    rng = np.random.default_rng(seed)
+    idx = rng.permutation(n)
+    n_val = int(n * val_fraction)
+
+    train_df = df.iloc[idx[n_val:]].reset_index(drop=True)
+    val_df = df.iloc[idx[:n_val]].reset_index(drop=True)
+
+    train_ds = RunningDataset(train_df, fit_scaler=True)
+    val_ds = RunningDataset(val_df, scaler=train_ds.scaler)
+
+    return train_ds, val_ds, train_ds.scaler
+
+
 def make_synthetic_data(
     n_samples: int = 500,
     n_features: int = 4,
