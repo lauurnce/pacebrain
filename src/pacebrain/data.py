@@ -4,6 +4,76 @@ Data utilities — synthetic generator (Day 2) and real RunningDataset (Day 3+).
 
 import torch
 import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from torch.utils.data import Dataset
+
+
+# Features used by RunningDataset.  Target is finish_time_min.
+FEATURE_COLS = [
+    "weekly_mileage_km",   # avg km per week in training block
+    "avg_pace_min_per_km", # easy-run pace (lower = faster runner)
+    "long_run_km",         # longest run in the block
+    "days_since_long_run", # recency of the long run
+    "runs_per_week",       # training frequency
+    "race_distance_km",    # 5 / 10 / 21.1 / 42.2
+]
+TARGET_COL = "finish_time_min"
+
+
+def make_sample_data(n_samples: int = 300, seed: int = 42) -> pd.DataFrame:
+    """
+    Generate synthetic running data that mimics a Strava/Garmin export.
+
+    Each row represents one runner's training block plus a race result.
+    The target (finish_time_min) is derived from a noisy physics-inspired
+    formula so the MLP has a real, learnable signal.
+
+    To swap in your own data later:
+        df = pd.read_csv("data/activities.csv")
+        # rename columns to match FEATURE_COLS + TARGET_COL, then proceed.
+    """
+    rng = np.random.default_rng(seed)
+
+    weekly_mileage = rng.uniform(20, 120, n_samples).astype(np.float32)
+    avg_pace = rng.uniform(4.5, 7.5, n_samples).astype(np.float32)  # min/km
+    long_run = rng.uniform(10, 35, n_samples).astype(np.float32)
+    days_since_long = rng.integers(3, 21, n_samples).astype(np.float32)
+    runs_per_week = rng.uniform(3, 7, n_samples).astype(np.float32)
+    race_distances = rng.choice(
+        [5.0, 10.0, 21.1, 42.2], n_samples
+    ).astype(np.float32)
+
+    # Base time = pace * distance (minutes)
+    base = avg_pace * race_distances
+
+    # Longer races are harder relative to training pace (Riegel effect)
+    distance_penalty = (race_distances / 10.0) ** 0.06
+
+    # More weekly volume -> better aerobic base -> faster
+    volume_bonus = np.exp(-0.008 * (weekly_mileage - 50))
+
+    # Bigger long run -> better endurance
+    long_run_bonus = np.exp(-0.015 * (long_run - 15))
+
+    # Stale training (long gap since long run) -> slightly slower
+    freshness_penalty = 1.0 + 0.005 * days_since_long
+
+    finish_time = (
+        base * distance_penalty * volume_bonus * long_run_bonus * freshness_penalty
+    )
+    finish_time += rng.normal(0, 2, n_samples).astype(np.float32)
+    finish_time = np.clip(finish_time, 15.0, 360.0).astype(np.float32)
+
+    return pd.DataFrame({
+        "weekly_mileage_km": weekly_mileage,
+        "avg_pace_min_per_km": avg_pace,
+        "long_run_km": long_run,
+        "days_since_long_run": days_since_long,
+        "runs_per_week": runs_per_week,
+        "race_distance_km": race_distances,
+        TARGET_COL: finish_time,
+    })
 
 
 def make_synthetic_data(
