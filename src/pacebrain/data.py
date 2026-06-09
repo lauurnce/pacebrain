@@ -76,6 +76,52 @@ def make_sample_data(n_samples: int = 300, seed: int = 42) -> pd.DataFrame:
     })
 
 
+class RunningDataset(Dataset):
+    """
+    PyTorch Dataset wrapping a running DataFrame.
+
+    Subclassing Dataset requires two methods:
+        __len__  — total number of samples
+        __getitem__ — return one (features, target) pair by index
+
+    DataLoader calls these under the hood to build shuffled mini-batches.
+
+    Args:
+        df:         DataFrame containing FEATURE_COLS + TARGET_COL
+        scaler:     a pre-fitted StandardScaler to apply (or None)
+        fit_scaler: if True, fit a new scaler on this data.
+                    Only ever set True on the training split — see make_datasets().
+    """
+
+    def __init__(
+        self,
+        df: pd.DataFrame,
+        scaler: StandardScaler | None = None,
+        fit_scaler: bool = False,
+    ):
+        X = df[FEATURE_COLS].values.astype(np.float32)
+        y = df[TARGET_COL].values.astype(np.float32).reshape(-1, 1)
+
+        if fit_scaler:
+            self.scaler = StandardScaler()
+            X = self.scaler.fit_transform(X)
+        elif scaler is not None:
+            self.scaler = scaler
+            X = scaler.transform(X)
+        else:
+            self.scaler = None
+
+        # Store as tensors so __getitem__ is a direct index, no conversion each call
+        self.X = torch.from_numpy(X)
+        self.y = torch.from_numpy(y)
+
+    def __len__(self) -> int:
+        return len(self.X)
+
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
+        return self.X[idx], self.y[idx]
+
+
 def make_synthetic_data(
     n_samples: int = 500,
     n_features: int = 4,
