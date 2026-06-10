@@ -59,6 +59,23 @@ Compares the MLP against the Riegel baseline on the validation set and saves a s
 python src/pacebrain/eval.py
 ```
 
+### Using your own data
+
+`data/` is gitignored — drop a CSV there with the six feature columns plus
+`finish_time_min`. Extra columns are ignored, so a raw export can be passed
+through unchanged.
+
+```python
+from pacebrain.data import load_running_csv, make_datasets
+
+df = load_running_csv("data/activities.csv")
+train_ds, val_ds, scaler = make_datasets(df)
+```
+
+The loader validates the schema up front and names any missing column, rather
+than failing later inside dataset construction. Rows with missing or
+non-numeric values are dropped by default (`dropna=False` to keep them).
+
 ### Predict
 
 Predicts a race finish time from recent training stats.
