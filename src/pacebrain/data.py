@@ -4,6 +4,8 @@ Data utilities — synthetic generator (Day 2) and real RunningDataset (Day 3+).
 
 from __future__ import annotations
 
+import pathlib
+
 import numpy as np
 import pandas as pd
 import torch
@@ -75,6 +77,57 @@ def make_sample_data(n_samples: int = 300, seed: int = 42) -> pd.DataFrame:
         "race_distance_km": race_distances,
         TARGET_COL: finish_time,
     })
+
+
+def load_running_csv(path: str | pathlib.Path, dropna: bool = True) -> pd.DataFrame:
+    """
+    Load a real running export and validate it against the expected schema.
+
+    make_sample_data() documents swapping in your own CSV, but read_csv alone
+    does not check that the file actually has the columns the model needs. A
+    missing column surfaces later as a KeyError deep inside dataset
+    construction, and a column present but misnamed surfaces as silently wrong
+    predictions -- so validate up front and fail with a message that says what
+    is wrong.
+
+    Args:
+        path:   CSV containing FEATURE_COLS + TARGET_COL (extra columns are
+                ignored, so a raw export can be passed through unchanged)
+        dropna: drop rows with missing values in the required columns. Real
+                exports routinely have gaps; a NaN reaching the model produces
+                a NaN loss and silently poisons training.
+
+    Returns:
+        DataFrame with exactly FEATURE_COLS + TARGET_COL, as float32, with the
+        index reset so positional splitting downstream stays predictable.
+    """
+    csv_path = pathlib.Path(path)
+    if not csv_path.exists():
+        raise FileNotFoundError(f"No CSV at {csv_path}.")
+
+    df = pd.read_csv(csv_path)
+
+    required = FEATURE_COLS + [TARGET_COL]
+    missing = [col for col in required if col not in df.columns]
+    if missing:
+        raise ValueError(
+            f"{csv_path} is missing required column(s): {missing}. "
+            f"Expected all of: {required}"
+        )
+
+    out = df[required].apply(pd.to_numeric, errors="coerce").astype(np.float32)
+
+    if dropna:
+        before = len(out)
+        out = out.dropna()
+        dropped = before - len(out)
+        if dropped:
+            print(f"load_running_csv: dropped {dropped} of {before} rows with missing values")
+
+    if out.empty:
+        raise ValueError(f"{csv_path} has no usable rows after validation.")
+
+    return out.reset_index(drop=True)
 
 
 class RunningDataset(Dataset):
