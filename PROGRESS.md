@@ -26,3 +26,16 @@ Extended `data.py` with three new pieces: `make_sample_data()` generates a synth
 
 **One thing to review:**
 Data leakage via the scaler: if you fit `StandardScaler` on the full dataset before splitting, the val set's mean and std contaminate the scaler. The model then "sees" val statistics during training. Always split first, fit on train only, then transform both.
+
+---
+
+## Day 4 — Finish-time predictor (train) (2026-06-11)
+
+**What was built:**
+`FinishTimePredictor` model class in `models.py` (thin wrapper around MLP, locked to 6 running features). `config.py` with a `FinishPredictorConfig` dataclass holding all hyperparameters. `train_finish.py` with a full train/val loop using `DataLoader`, per-epoch validation, early stopping, and `state_dict` checkpointing to `models/finish_predictor.pt`. Training stopped at epoch 189 (patience=25), best val MSE 30.48 (RMSE ~5.5 min).
+
+**PyTorch concept learned:**
+`state_dict` — a plain ordered dict of every learnable tensor in a model keyed by layer name. Saving `model.state_dict()` (not the model object itself) is idiomatic because it is version-stable: you can load weights into a freshly constructed model even if the class definition changes, as long as the architecture matches. Load with `model.load_state_dict(torch.load(...))`.
+
+**One thing to review:**
+Overfitting signs: when train loss keeps falling but val loss flattens or rises, the model is memorizing training samples. Early stopping is one fix; dropout (already wired in) is another. Watch the gap between train and val loss curves, not just the absolute values.
