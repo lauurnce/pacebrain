@@ -46,3 +46,24 @@ class MLP(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """One forward pass. Called by model(x), not model.forward(x)."""
         return self.net(x)
+
+
+class FinishTimePredictor(MLP):
+    """
+    Thin wrapper around MLP wired to the 6 running features in data.py.
+
+    Separating this from the generic MLP makes checkpoints self-documenting
+    and simplifies loading in inference code later.
+    """
+
+    N_FEATURES = 6  # must stay in sync with len(FEATURE_COLS) in data.py
+
+    def __init__(self, hidden_sizes: list[int] = None, dropout: float = 0.1):
+        if hidden_sizes is None:
+            hidden_sizes = [64, 32]
+        super().__init__(
+            input_size=self.N_FEATURES,
+            hidden_sizes=hidden_sizes,
+            output_size=1,
+            dropout=dropout,
+        )
