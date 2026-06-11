@@ -39,3 +39,19 @@ Data leakage via the scaler: if you fit `StandardScaler` on the full dataset bef
 
 **One thing to review:**
 Overfitting signs: when train loss keeps falling but val loss flattens or rises, the model is memorizing training samples. Early stopping is one fix; dropout (already wired in) is another. Watch the gap between train and val loss curves, not just the absolute values.
+
+---
+
+## Day 5 — Evaluation and a real baseline (2026-06-11)
+
+**What was built:**
+`eval.py` with three components: `mae_minutes()` computes mean absolute error in interpretable units (minutes, not minutes-squared); `riegel_predict()` implements the Riegel race-time formula T2 = T1 * (D2/D1)^1.06 as a non-ML baseline; `run_evaluation()` loads the Day 4 checkpoint, runs both the MLP and Riegel on the validation set, prints a comparison, and saves a side-by-side scatter plot to `reports/day5_scatter.png`.
+
+**Results:**
+MLP MAE: 4.12 min. Riegel baseline MAE: 28.36 min. MLP beats Riegel by 85.5%. The Riegel baseline is weak here because we use easy training pace as the 10 km reference time proxy, which overshoots race pace significantly. In real use Riegel needs an actual prior race time, not a training pace.
+
+**PyTorch concept learned:**
+`model.eval()` and `torch.no_grad()` work together during inference. `model.eval()` disables Dropout and BatchNorm's training behaviour so predictions are deterministic. `torch.no_grad()` tells autograd to skip building the computation graph entirely, saving memory and speeding up forward passes. Always use both when you are not training.
+
+**One thing to review:**
+MAE vs RMSE vs MSE: all measure prediction error but penalise outliers differently. MSE squares errors (large mistakes dominate). RMSE is MSE square-rooted (same units as target, outlier-sensitive). MAE is the mean of absolute errors (robust to outliers, most interpretable for end users). For a running app where a 30-min prediction error is catastrophic, RMSE would punish it harder than MAE, which could be more appropriate.
