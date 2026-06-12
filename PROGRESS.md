@@ -16,6 +16,19 @@ Why `.grad` accumulates by default instead of resetting. Related: why `optimizer
 
 ---
 
+## Day 2 — First neural net (MLP) on toy data (2026-06-08)
+
+**What was built:**
+`models.py` with a generic `MLP` class: an `nn.Module` subclass that stacks `nn.Linear` + `nn.ReLU` (plus optional `nn.Dropout`) layers into an `nn.Sequential`. `data.py` with `make_synthetic_data()` (a linear combination of features plus a nonlinear x0^2 term plus noise, so the net has something non-trivial to fit) and `train_val_split()`. `train.py` with a full training loop: manual mini-batching via `torch.randperm`, `nn.MSELoss`, `torch.optim.Adam`, best-checkpoint saving to `models/mlp_synthetic.pt`, and a train/val loss curve saved to `reports/day2_loss_curve.png`.
+
+**PyTorch concept learned:**
+`nn.Module` and the forward pass. A model is a class where layers are defined in `__init__` and `forward()` describes one pass of data through them; autograd derives the backward pass for free. Every training step is the same five-beat cycle: `optimizer.zero_grad()` to clear old gradients, forward pass with `model(x)`, compute the loss, `loss.backward()` to fill `.grad` on every parameter, `optimizer.step()` to update the weights. Every training loop I will ever write is a variation of this.
+
+**One thing to review:**
+Why you call `model(x)` instead of `model.forward(x)`. `nn.Module.__call__` runs registered hooks and other bookkeeping before delegating to `forward()`, so calling `forward()` directly silently skips that machinery.
+
+---
+
 ## Day 3 — Real running data pipeline (2026-06-09)
 
 **What was built:**
