@@ -84,3 +84,19 @@ A checkpoint made with `torch.save(model.state_dict())` holds weights only, not 
 
 **One thing to review:**
 Why the scaler can be rebuilt from a seed here (synthetic, deterministic data) but in a real project it must be persisted alongside the checkpoint, for example with joblib or by saving its mean and scale arrays in the checkpoint dict.
+
+---
+
+## Day 7 — Sequence model intro (LSTM) (2026-06-13)
+
+**What was built:**
+`seq_data.py`: each race becomes a sequence of 10 equal-distance segments. `make_sample_sequences()` generates per-segment pace with a fade model (pace rises in the back half, worse for long races and runners with an endurance deficit). `PacingSequenceDataset` plus `make_seq_datasets()` with a by-race train/val split and train-only normalization stats. `seq_models.py`: `PacingLSTM`, an `nn.LSTM` (batch_first) plus a per-timestep `nn.Linear` head mapping (batch, 10, 6) to (batch, 10, 1). `train_pacing.py` mirrors `train_finish.py` almost line for line. `tests/test_seq_data.py` covers shapes, determinism, the fade property, and no leakage.
+
+**Results:**
+Trained 200 epochs (no early stop). Best val MSE 0.0084, val RMSE 0.092 min/km per segment, which sits at the generator's noise floor (0.08), so the model learned essentially all the available signal. On a validation marathon with a 2.2 min/km blow-up the predicted back-half paces track the actual fade within about 0.3 min/km.
+
+**PyTorch concept learned:**
+An LSTM carries a hidden state and a cell state across timesteps, with gates deciding what to remember and forget; that running memory is what models fatigue accumulating over a race. `nn.LSTM` returns the hidden state at every timestep (used here for per-segment predictions) plus the final states only (what you would use for a single summary output). The training loop itself did not change at all from Day 4: only the model class and tensor shapes did.
+
+**One thing to review:**
+Variable-length sequences. Fixed 10 segments lets batching be a simple stack; real per-km splits give 5 to 42 timesteps per race and need padding plus `pack_padded_sequence` so the LSTM skips the padded steps. Also review LSTM vs GRU trade-offs.
