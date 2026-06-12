@@ -35,3 +35,31 @@ class FinishPredictorConfig:
     # Paths
     checkpoint_path: str = "models/finish_predictor.pt"
     plot_path: str = "reports/day4_loss_curve.png"
+
+
+@dataclass
+class PacingConfig:
+    # Model architecture
+    input_size: int = 6          # must match len(SEQ_FEATURES) in seq_data.py
+    hidden_size: int = 64        # width of the LSTM hidden state
+    num_layers: int = 1          # stacked LSTM layers
+    dropout: float = 0.0         # only applies between stacked layers (num_layers > 1)
+
+    # Optimiser
+    lr: float = 1e-3
+
+    # Training schedule
+    epochs: int = 200
+    batch_size: int = 32
+
+    # Early stopping: halt if val loss doesn't improve for this many epochs.
+    patience: int = 20
+
+    # Data
+    n_races: int = 600           # synthetic races from make_sample_sequences()
+    val_fraction: float = 0.2
+    seed: int = 42
+
+    # Paths
+    checkpoint_path: str = "models/pacing_model.pt"
+    plot_path: str = "reports/day7_loss_curve.png"
