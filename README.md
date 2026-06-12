@@ -31,6 +31,36 @@ source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+## Usage
+
+### Train
+
+Trains the finish-time predictor, saves the checkpoint to `models/finish_predictor.pt` and the loss curve to `reports/day4_loss_curve.png`.
+
+```bash
+python src/pacebrain/train_finish.py
+```
+
+### Evaluate
+
+Compares the MLP against the Riegel baseline on the validation set and saves a scatter plot to `reports/day5_scatter.png`.
+
+```bash
+python src/pacebrain/eval.py
+```
+
+### Predict
+
+Predicts a race finish time from recent training stats.
+
+```bash
+python src/pacebrain/predict.py --weekly-mileage 60 --avg-pace 5.5 --long-run 28 --race-distance 42.2
+```
+
+Required flags: `--weekly-mileage` (km per week), `--avg-pace` (easy-run pace in min/km), `--long-run` (longest recent run in km), `--race-distance` (km: 5, 10, 21.1, or 42.2).
+Optional flags: `--days-since-long-run` (default 7), `--runs-per-week` (default 4).
+Output: predicted finish time in minutes, in H:MM:SS, and the implied race pace.
+
 ## Running the scratch scripts
 
 ```bash
@@ -43,11 +73,12 @@ python src/scratch/manual_grad_descent.py
 
 ## Results
 
-_Populated from Day 5 onward._
-
 | Model | MAE (min) | vs Riegel baseline |
 |---|---|---|
-| Finish-time MLP | TBD | TBD |
+| Finish-time MLP | 4.12 | 85.5% lower error |
+| Riegel formula (baseline) | 28.36 | reference |
+
+Note: the data is synthetic, and the Riegel baseline is weak here because it uses easy training pace as the reference time proxy, which overshoots race pace.
 
 ## Progress log
 
