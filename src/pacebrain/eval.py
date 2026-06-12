@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 
 from pacebrain.config import FinishPredictorConfig
 from pacebrain.data import make_sample_data, make_datasets, TARGET_COL
-from pacebrain.models import FinishTimePredictor
+from pacebrain.inference import load_finish_model
 
 
 # ---------------------------------------------------------------------------
@@ -161,13 +161,7 @@ def run_evaluation(cfg: FinishPredictorConfig) -> None:
     val_loader = DataLoader(val_ds, batch_size=cfg.batch_size, shuffle=False, num_workers=0)
 
     # --- Load model checkpoint -----------------------------------------------
-    checkpoint_path = pathlib.Path(cfg.checkpoint_path)
-    if not checkpoint_path.exists():
-        raise FileNotFoundError(
-            f"Checkpoint not found at {checkpoint_path}. Run train_finish.py first."
-        )
-    model = FinishTimePredictor(hidden_sizes=cfg.hidden_sizes, dropout=cfg.dropout)
-    model.load_state_dict(torch.load(checkpoint_path, weights_only=True))
+    model = load_finish_model(cfg)
 
     # --- Model predictions ---------------------------------------------------
     y_true_model, y_pred_model = get_model_predictions(model, val_loader)
