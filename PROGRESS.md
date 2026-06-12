@@ -68,3 +68,19 @@ MLP MAE: 4.12 min. Riegel baseline MAE: 28.36 min. MLP beats Riegel by 85.5%. Th
 
 **One thing to review:**
 MAE vs RMSE vs MSE: all measure prediction error but penalise outliers differently. MSE squares errors (large mistakes dominate). RMSE is MSE square-rooted (same units as target, outlier-sensitive). MAE is the mean of absolute errors (robust to outliers, most interpretable for end users). For a running app where a 30-min prediction error is catastrophic, RMSE would punish it harder than MAE, which could be more appropriate.
+
+---
+
+## Day 6 — Refactor and inference CLI (2026-06-13)
+
+**What was built:**
+New `inference.py` module with three helpers: `load_finish_model()` (construct model, load state_dict, switch to eval mode), `rebuild_scaler()` (refit the training StandardScaler deterministically from the same seed, since the checkpoint stores only weights), and `predict_finish_time()` (scale one feature dict, forward pass under no_grad, return minutes). `eval.py` refactored to use the shared loader. `__init__.py` now exports the public package API with `__all__`. New `predict.py`: an argparse CLI that takes six training stats and prints predicted finish time in minutes, H:MM:SS, and implied race pace. Also backfilled the missing Day 2 log entry and filled the README results table and usage section.
+
+**Results:**
+CLI smoke test: 60 km/week at 5.5 min/km easy pace with a 28 km long run predicts a 42.2 km race at 199.0 min (3:19:00), within 0.1 min of the synthetic ground-truth formula. All 10 tests pass and eval.py output is unchanged after the refactor (MLP MAE still 4.12 min).
+
+**PyTorch concept learned:**
+A checkpoint made with `torch.save(model.state_dict())` holds weights only, not architecture and not preprocessing. Inference therefore needs three things reassembled: the model class built with the same hyperparameters, the weights loaded into it, and the exact same input scaling as training. Forgetting the scaler gives silently wrong predictions, not an error.
+
+**One thing to review:**
+Why the scaler can be rebuilt from a seed here (synthetic, deterministic data) but in a real project it must be persisted alongside the checkpoint, for example with joblib or by saving its mean and scale arrays in the checkpoint dict.
