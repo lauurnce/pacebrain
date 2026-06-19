@@ -126,7 +126,7 @@ def test_validation_runs_before_model_is_loaded(monkeypatch):
     def boom(*_args, **_kwargs):
         raise AssertionError("model was loaded despite invalid input")
 
-    monkeypatch.setattr(predict, "rebuild_scaler", boom)
+    monkeypatch.setattr(predict, "load_scaler", boom)
     monkeypatch.setattr(predict, "load_finish_model", boom)
     monkeypatch.setattr(sys, "argv", cli_args(race_distance=0.0))
 
@@ -178,7 +178,7 @@ def test_out_of_range_input_is_not_an_error():
 
 def stub_model(monkeypatch, minutes=240.0):
     """Replace the checkpoint-backed helpers so main() can run end to end."""
-    monkeypatch.setattr(predict, "rebuild_scaler", lambda cfg: None)
+    monkeypatch.setattr(predict, "load_scaler", lambda cfg: None)
     monkeypatch.setattr(predict, "load_finish_model", lambda cfg: None)
     monkeypatch.setattr(
         predict, "predict_finish_time", lambda model, scaler, features: minutes

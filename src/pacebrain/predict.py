@@ -20,7 +20,7 @@ import argparse
 import math
 
 from pacebrain.config import FinishPredictorConfig
-from pacebrain.inference import load_finish_model, predict_finish_time, rebuild_scaler
+from pacebrain.inference import load_finish_model, load_scaler, predict_finish_time
 
 
 # The ranges make_sample_data() draws each feature from in data.py.  The model
@@ -228,7 +228,7 @@ def main() -> None:
 
     # Rebuild the training scaler (deterministic — see inference.rebuild_scaler)
     # and load the trained weights from the checkpoint.
-    scaler = rebuild_scaler(cfg)
+    scaler = load_scaler(cfg)
     model = load_finish_model(cfg)
 
     # Keys must match FEATURE_COLS in data.py — same names, same order matters
