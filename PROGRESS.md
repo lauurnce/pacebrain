@@ -100,3 +100,19 @@ An LSTM carries a hidden state and a cell state across timesteps, with gates dec
 
 **One thing to review:**
 Variable-length sequences. Fixed 10 segments lets batching be a simple stack; real per-km splits give 5 to 42 timesteps per race and need padding plus `pack_padded_sequence` so the LSTM skips the padded steps. Also review LSTM vs GRU trade-offs.
+
+---
+
+## Day 8 — Persisting the scaler with the checkpoint (2026-06-19)
+
+**What was built:**
+Resolved the open question from Day 6. `train_finish.py` now saves a dict rather than a bare `state_dict`: the weights, the fitted scaler's `mean_` and `scale_` as float64 tensors, and the `FEATURE_COLS` order the model was trained on. New `load_scaler()` in `inference.py` reads those statistics back, falling back to the old `rebuild_scaler()` when the checkpoint predates the change. `load_finish_model()` accepts both formats by looking for a `"state_dict"` key, so Day 4-7 checkpoints still load. `predict.py` and the Streamlit app now call `load_scaler()`.
+
+**Results:**
+End-to-end unchanged: 60 km/week at 5.5 min/km with a 28 km long run still predicts 199.0 min (3:19:00) for a marathon, matching the Day 6 smoke test exactly. 166 tests pass. Six new tests cover the round trip, the fallback paths, and the case that actually matters — a checkpoint whose statistics differ from the synthetic generator now returns the saved values instead of silently substituting synthetic ones.
+
+**PyTorch concept learned:**
+`weights_only=True` restricts `torch.load` to tensors and simple containers rather than running the full pickle machinery, which can execute arbitrary code. That constrains what a checkpoint may contain: numpy arrays are not tensors, so the scaler statistics have to be converted with `torch.tensor(...)` before saving. Keeping the flag on was worth the conversion — loading an untrusted checkpoint should never be able to run code.
+
+**One thing to review:**
+Checkpoint versioning. The dict format is self-describing enough to sniff today, but a `"version"` key would beat key-presence checks once there are three formats. Also worth reading how `safetensors` handles this, since it stores metadata alongside tensors by design.

@@ -8,7 +8,12 @@ from pacebrain.data import (
     make_datasets,
     make_sample_data,
 )
-from pacebrain.inference import load_finish_model, predict_finish_time, rebuild_scaler
+from pacebrain.inference import (
+    load_finish_model,
+    load_scaler,
+    predict_finish_time,
+    rebuild_scaler,
+)
 from pacebrain.models import MLP, FinishTimePredictor
 from pacebrain.seq_data import (
     N_SEGMENTS,
@@ -29,6 +34,7 @@ __all__ = [
     "TARGET_COL",
     "FinishPredictorConfig",
     "load_finish_model",
+    "load_scaler",
     "rebuild_scaler",
     "predict_finish_time",
     "PacingLSTM",

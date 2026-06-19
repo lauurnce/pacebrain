@@ -20,7 +20,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 import streamlit as st
 
 from pacebrain.config import FinishPredictorConfig
-from pacebrain.inference import load_finish_model, predict_finish_time, rebuild_scaler
+from pacebrain.inference import load_finish_model, load_scaler, predict_finish_time
 from pacebrain.predict import format_hms, format_pace
 
 
@@ -62,7 +62,7 @@ def load_predictor():
     without needing to clear the cache.
     """
     cfg = FinishPredictorConfig()
-    return load_finish_model(cfg), rebuild_scaler(cfg)
+    return load_finish_model(cfg), load_scaler(cfg)
 
 
 def out_of_range(features: dict) -> list:

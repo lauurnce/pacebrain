@@ -10,7 +10,12 @@ import torch
 
 from pacebrain.config import FinishPredictorConfig
 from pacebrain.data import FEATURE_COLS, make_datasets, make_sample_data
-from pacebrain.inference import load_finish_model, predict_finish_time, rebuild_scaler
+from pacebrain.inference import (
+    load_finish_model,
+    load_scaler,
+    predict_finish_time,
+    rebuild_scaler,
+)
 from pacebrain.models import FinishTimePredictor
 from pacebrain.predict import format_hms, format_pace
 
@@ -325,3 +330,104 @@ def test_format_pace_rounding_carries_into_the_next_minute():
 
 def test_format_pace_returns_string():
     assert isinstance(format_pace(5.82), str)
+
+
+# ---------------------------------------------------------------------------
+# load_scaler — the scaler now travels inside the checkpoint
+#
+# rebuild_scaler() refits from the synthetic generator, so it is only correct
+# while training also uses that generator. These pin the replacement, which
+# reads whatever statistics training actually saw.
+# ---------------------------------------------------------------------------
+
+def _new_format_checkpoint(path, model, scaler):
+    torch.save(
+        {
+            "state_dict": model.state_dict(),
+            "scaler_mean": torch.tensor(scaler.mean_, dtype=torch.float64),
+            "scaler_scale": torch.tensor(scaler.scale_, dtype=torch.float64),
+            "feature_cols": list(FEATURE_COLS),
+        },
+        path,
+    )
+
+
+def test_load_scaler_round_trips_the_saved_statistics(tmp_path):
+    path = tmp_path / "ckpt.pt"
+    original = _fitted_scaler()
+    _new_format_checkpoint(path, _tiny_model(), original)
+
+    loaded = load_scaler(_small_cfg(checkpoint_path=str(path)))
+
+    np.testing.assert_allclose(loaded.mean_, original.mean_)
+    np.testing.assert_allclose(loaded.scale_, original.scale_)
+
+
+def test_load_scaler_returns_training_statistics_not_synthetic_ones(tmp_path):
+    """
+    The regression test proper.
+
+    Simulates training on data whose statistics differ from the synthetic
+    generator — which is exactly what happens the moment a real CSV is used.
+    rebuild_scaler() would hand back synthetic mean/scale and silently
+    mis-normalise every prediction; load_scaler must return what was saved.
+    """
+    path = tmp_path / "ckpt.pt"
+    real_world = _fitted_scaler()
+    real_world.mean_ = real_world.mean_ + 25.0      # a different population
+    real_world.scale_ = real_world.scale_ * 3.0
+    _new_format_checkpoint(path, _tiny_model(), real_world)
+
+    cfg = _small_cfg(checkpoint_path=str(path))
+    loaded = load_scaler(cfg)
+    synthetic = rebuild_scaler(cfg)
+
+    np.testing.assert_allclose(loaded.mean_, real_world.mean_)
+    assert not np.allclose(loaded.mean_, synthetic.mean_)
+
+
+def test_load_scaler_transform_matches_the_original(tmp_path):
+    """Round-tripped statistics must produce identical scaling, not just equal arrays."""
+    path = tmp_path / "ckpt.pt"
+    original = _fitted_scaler()
+    _new_format_checkpoint(path, _tiny_model(), original)
+
+    row = np.array([[60.0, 5.5, 28.0, 7.0, 4.0, 42.2]], dtype=np.float64)
+    loaded = load_scaler(_small_cfg(checkpoint_path=str(path)))
+
+    np.testing.assert_allclose(loaded.transform(row), original.transform(row))
+
+
+def test_load_scaler_falls_back_for_pre_day8_checkpoints(tmp_path):
+    """A bare state_dict carries no scaler, so the seeded refit is still used."""
+    path = tmp_path / "old.pt"
+    torch.save(_tiny_model().state_dict(), path)
+
+    cfg = _small_cfg(checkpoint_path=str(path))
+    np.testing.assert_allclose(load_scaler(cfg).mean_, rebuild_scaler(cfg).mean_)
+
+
+def test_load_scaler_falls_back_when_checkpoint_is_missing(tmp_path):
+    cfg = _small_cfg(checkpoint_path=str(tmp_path / "nope.pt"))
+    np.testing.assert_allclose(load_scaler(cfg).mean_, rebuild_scaler(cfg).mean_)
+
+
+def test_load_finish_model_accepts_both_checkpoint_formats(tmp_path):
+    """Old bare-state_dict checkpoints must keep loading after the format change."""
+    model = _tiny_model()
+
+    old_path = tmp_path / "old.pt"
+    torch.save(model.state_dict(), old_path)
+    old_cfg = _small_cfg(checkpoint_path=str(old_path))
+    old_cfg.hidden_sizes = [8, 4]
+    assert load_finish_model(old_cfg) is not None
+
+    new_path = tmp_path / "new.pt"
+    _new_format_checkpoint(new_path, model, _fitted_scaler())
+    new_cfg = _small_cfg(checkpoint_path=str(new_path))
+    new_cfg.hidden_sizes = [8, 4]
+    loaded = load_finish_model(new_cfg)
+
+    x = torch.randn(2, 6)
+    with torch.no_grad():
+        assert torch.allclose(loaded(x), model(x))
