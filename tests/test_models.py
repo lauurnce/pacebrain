@@ -175,3 +175,47 @@ def test_backward_populates_gradients():
     loss.backward()
     assert all(p.grad is not None for p in model.parameters())
     assert any(p.grad.abs().sum() > 0 for p in model.parameters())
+
+
+# ---------------------------------------------------------------------------
+# cfg.input_size is actually honoured
+#
+# These guard a knob that used to be dead: FinishTimePredictor hardwired
+# input_size to N_FEATURES, so FinishPredictorConfig.input_size could be set
+# to anything and silently have no effect.
+# ---------------------------------------------------------------------------
+
+def test_input_size_defaults_to_n_features():
+    """Omitting input_size keeps the historical 6-feature behaviour."""
+    model = FinishTimePredictor()
+    assert linear_layers(model)[0].in_features == FinishTimePredictor.N_FEATURES
+
+
+def test_explicit_input_size_changes_first_layer():
+    """The knob has to reach the first Linear, not just be accepted."""
+    model = FinishTimePredictor(input_size=9, hidden_sizes=[4])
+    assert linear_layers(model)[0].in_features == 9
+    assert model(torch.randn(3, 9)).shape == (3, 1)
+
+
+def test_explicit_input_size_rejects_old_width():
+    """A model built for 9 features must not silently accept 6."""
+    model = FinishTimePredictor(input_size=9, hidden_sizes=[4])
+    with pytest.raises(RuntimeError):
+        model(torch.randn(3, 6))
+
+
+def test_config_input_size_reaches_the_model():
+    """
+    The regression test proper: drive construction from a config whose
+    input_size differs from N_FEATURES. Before the fix this produced a
+    6-feature model and the assertion below failed.
+    """
+    cfg = FinishPredictorConfig()
+    cfg.input_size = 7
+    model = FinishTimePredictor(
+        input_size=cfg.input_size,
+        hidden_sizes=cfg.hidden_sizes,
+        dropout=cfg.dropout,
+    )
+    assert linear_layers(model)[0].in_features == 7

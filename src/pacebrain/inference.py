@@ -35,7 +35,11 @@ def load_finish_model(cfg: FinishPredictorConfig) -> FinishTimePredictor:
         raise FileNotFoundError(
             f"Checkpoint not found at {checkpoint_path}. Run train_finish.py first."
         )
-    model = FinishTimePredictor(hidden_sizes=cfg.hidden_sizes, dropout=cfg.dropout)
+    model = FinishTimePredictor(
+        input_size=cfg.input_size,
+        hidden_sizes=cfg.hidden_sizes,
+        dropout=cfg.dropout,
+    )
     model.load_state_dict(torch.load(checkpoint_path, weights_only=True))
     model.eval()
     return model
