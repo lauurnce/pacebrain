@@ -84,7 +84,11 @@ def train(cfg: FinishPredictorConfig) -> FinishTimePredictor:
     print(f"Train: {len(train_ds)} samples   Val: {len(val_ds)} samples")
 
     # --- Model -----------------------------------------------------------------
-    model = FinishTimePredictor(hidden_sizes=cfg.hidden_sizes, dropout=cfg.dropout)
+    model = FinishTimePredictor(
+        input_size=cfg.input_size,
+        hidden_sizes=cfg.hidden_sizes,
+        dropout=cfg.dropout,
+    )
     loss_fn = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr)
 

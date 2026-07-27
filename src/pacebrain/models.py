@@ -2,6 +2,8 @@
 Neural network model definitions.
 """
 
+from typing import Optional
+
 import torch
 import torch.nn as nn
 
@@ -54,15 +56,29 @@ class FinishTimePredictor(MLP):
 
     Separating this from the generic MLP makes checkpoints self-documenting
     and simplifies loading in inference code later.
+
+    Args:
+        input_size:   number of input features; defaults to N_FEATURES.
+                      Mirrors PacingLSTM, which takes the same argument so
+                      train_pacing.py can drive it from PacingConfig.
+        hidden_sizes: list of hidden layer widths (default [64, 32])
+        dropout:      dropout probability after each hidden layer
     """
 
     N_FEATURES = 6  # must stay in sync with len(FEATURE_COLS) in data.py
 
-    def __init__(self, hidden_sizes: list[int] = None, dropout: float = 0.1):
+    def __init__(
+        self,
+        input_size: Optional[int] = None,
+        hidden_sizes: Optional[list] = None,
+        dropout: float = 0.1,
+    ):
+        if input_size is None:
+            input_size = self.N_FEATURES
         if hidden_sizes is None:
             hidden_sizes = [64, 32]
         super().__init__(
-            input_size=self.N_FEATURES,
+            input_size=input_size,
             hidden_sizes=hidden_sizes,
             output_size=1,
             dropout=dropout,
