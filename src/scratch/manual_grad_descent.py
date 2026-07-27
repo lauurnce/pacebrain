@@ -8,8 +8,9 @@ Key concept: after loss.backward(), each parameter's .grad holds d(loss)/d(param
 We nudge the parameter opposite to the gradient (gradient descent).
 """
 
-import torch
 import matplotlib
+import torch
+
 matplotlib.use("Agg")           # non-interactive backend — safe on any machine
 import matplotlib.pyplot as plt
 

@@ -19,7 +19,7 @@ import torch
 from sklearn.preprocessing import StandardScaler
 
 from pacebrain.config import FinishPredictorConfig
-from pacebrain.data import FEATURE_COLS, make_sample_data, make_datasets
+from pacebrain.data import FEATURE_COLS, make_datasets, make_sample_data
 from pacebrain.models import FinishTimePredictor
 
 

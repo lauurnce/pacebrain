@@ -9,10 +9,9 @@ to predict the fade in segments 6-10, which a plain MLP cannot.
 
 from __future__ import annotations
 
-import torch
 import numpy as np
+import torch
 from torch.utils.data import Dataset
-
 
 # Every race is split into N_SEGMENTS equal-distance segments, regardless
 # of total distance (segment 1 of a 5K is 0.5 km, of a marathon 4.22 km).

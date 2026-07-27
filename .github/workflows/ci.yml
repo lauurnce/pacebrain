@@ -8,7 +8,10 @@ on:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Superseding an in-flight run is right for a PR branch, where only the tip
+  # matters. On main it is not: during a merge queue each new merge cancelled
+  # the previous run, so several commits landed without ever getting a verdict.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
@@ -37,13 +40,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
+          # Editable install is not needed for the tests (pytest picks up src/
+          # via pythonpath in pyproject.toml) but it does verify the packaging
+          # metadata still builds, which nothing else in CI would catch.
+          pip install -e . --no-deps
 
       - name: Run tests
         run: pytest tests/ -q
 
-      # Non-blocking: the project has no ruff configuration yet and the
-      # codebase has never been linted, so failures here are informational
-      # until the existing findings are triaged.
-      - name: Lint with ruff (non-blocking)
-        continue-on-error: true
+      - name: Lint with ruff
         run: ruff check .

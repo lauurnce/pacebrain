@@ -8,14 +8,11 @@ Mixing those up is the actual bug this file guards against.
 """
 
 import sys
-import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 
 import pytest
 
 from pacebrain import predict
 from pacebrain.predict import check_training_range, validate_inputs
-
 
 # A runner sitting comfortably inside every training range, used as the
 # baseline that individual tests perturb one field at a time.

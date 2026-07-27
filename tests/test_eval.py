@@ -3,18 +3,14 @@ Tests for eval.py — MAE metric, Riegel baseline formula, model prediction
 collection over a DataLoader.
 """
 
-import sys
-import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 
 import numpy as np
 import pytest
 from torch.utils.data import DataLoader
 
-from pacebrain.data import make_sample_data, make_datasets, RunningDataset
-from pacebrain.eval import mae_minutes, riegel_predict, get_model_predictions
+from pacebrain.data import RunningDataset, make_datasets, make_sample_data
+from pacebrain.eval import get_model_predictions, mae_minutes, riegel_predict
 from pacebrain.models import FinishTimePredictor
-
 
 # ---------------------------------------------------------------------------
 # mae_minutes
