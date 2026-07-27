@@ -3,16 +3,13 @@ Tests for inference.py and the predict.py CLI formatters — checkpoint
 loading, scaler reconstruction, single-runner prediction, H:MM:SS / M:SS output.
 """
 
-import sys
-import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 
 import numpy as np
 import pytest
 import torch
 
 from pacebrain.config import FinishPredictorConfig
-from pacebrain.data import FEATURE_COLS, make_sample_data, make_datasets
+from pacebrain.data import FEATURE_COLS, make_datasets, make_sample_data
 from pacebrain.inference import load_finish_model, predict_finish_time, rebuild_scaler
 from pacebrain.models import FinishTimePredictor
 from pacebrain.predict import format_hms, format_pace

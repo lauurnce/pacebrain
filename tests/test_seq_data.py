@@ -3,21 +3,17 @@ Tests for seq_data.py — sequence generation, fade behavior, normalization,
 DataLoader batching.
 """
 
-import sys
-import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 
 import torch
 from torch.utils.data import DataLoader
 
 from pacebrain.seq_data import (
-    make_sample_sequences,
-    PacingSequenceDataset,
-    make_seq_datasets,
     N_SEGMENTS,
-    SEQ_FEATURES,
-    PACE_MIN,
     PACE_MAX,
+    PACE_MIN,
+    SEQ_FEATURES,
+    make_sample_sequences,
+    make_seq_datasets,
 )
 
 

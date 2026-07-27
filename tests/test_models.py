@@ -3,17 +3,14 @@ Tests for models.py — MLP layer construction, forward shapes, dropout
 behaviour, and the FinishTimePredictor / data.py feature-count invariant.
 """
 
-import sys
-import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 
+import pytest
 import torch
 import torch.nn as nn
-import pytest
 
-from pacebrain.models import MLP, FinishTimePredictor
-from pacebrain.data import FEATURE_COLS
 from pacebrain.config import FinishPredictorConfig
+from pacebrain.data import FEATURE_COLS
+from pacebrain.models import MLP, FinishTimePredictor
 
 
 def linear_layers(model: MLP) -> list:

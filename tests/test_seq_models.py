@@ -4,18 +4,15 @@ hidden-size wiring, the dropout gate, and the PacingConfig / seq_data.py
 feature-count invariant.
 """
 
-import sys
-import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 
 import warnings
 
-import torch
 import pytest
+import torch
 
-from pacebrain.seq_models import PacingLSTM
-from pacebrain.seq_data import N_SEGMENTS, SEQ_FEATURES, make_seq_datasets
 from pacebrain.config import PacingConfig
+from pacebrain.seq_data import N_SEGMENTS, SEQ_FEATURES, make_seq_datasets
+from pacebrain.seq_models import PacingLSTM
 
 
 def test_forward_output_shape():

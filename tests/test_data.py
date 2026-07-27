@@ -2,21 +2,17 @@
 Tests for data.py — running dataset, normalization, DataLoader batching.
 """
 
-import sys
-import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 
-import torch
 import numpy as np
-import pytest
+import torch
 from torch.utils.data import DataLoader
 
 from pacebrain.data import (
-    make_sample_data,
-    RunningDataset,
-    make_datasets,
     FEATURE_COLS,
     TARGET_COL,
+    RunningDataset,
+    make_datasets,
+    make_sample_data,
 )
 
 

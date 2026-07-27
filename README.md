@@ -33,6 +33,14 @@ source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+To work on the project itself (tests and linting), install the dev extras instead:
+
+```bash
+pip install -e ".[dev]"
+pytest          # 156 tests
+ruff check .
+```
+
 ## Usage
 
 ### Train
