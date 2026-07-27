@@ -7,6 +7,8 @@ target. Order matters — an LSTM can use "what happened in segments 1-5"
 to predict the fade in segments 6-10, which a plain MLP cannot.
 """
 
+from __future__ import annotations
+
 import torch
 import numpy as np
 from torch.utils.data import Dataset

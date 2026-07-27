@@ -25,6 +25,8 @@ app/               Streamlit demo (Day 9)
 
 ## Setup
 
+Requires Python 3.9 or newer.
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
