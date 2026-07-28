@@ -18,6 +18,7 @@ import numpy as np
 import torch
 from sklearn.preprocessing import StandardScaler
 
+from pacebrain.checkpoint import check_feature_cols, read_scaler, read_state_dict
 from pacebrain.config import FinishPredictorConfig
 from pacebrain.data import FEATURE_COLS, make_datasets, make_sample_data
 from pacebrain.models import FinishTimePredictor
@@ -40,22 +41,13 @@ def load_finish_model(cfg: FinishPredictorConfig) -> FinishTimePredictor:
         hidden_sizes=cfg.hidden_sizes,
         dropout=cfg.dropout,
     )
-    model.load_state_dict(_extract_state_dict(torch.load(checkpoint_path, weights_only=True)))
+    checkpoint = torch.load(checkpoint_path, weights_only=True)
+    # Checked before the weights load, because a feature-order mismatch does
+    # not change any tensor shape — load_state_dict would accept it happily.
+    check_feature_cols(checkpoint, FEATURE_COLS)
+    model.load_state_dict(read_state_dict(checkpoint))
     model.eval()
     return model
-
-
-def _extract_state_dict(checkpoint: dict) -> dict:
-    """
-    Pull the weights out of a checkpoint, old format or new.
-
-    Day 4-7 saved bare state_dicts; from Day 8 the checkpoint is a dict that
-    also carries the scaler. A bare state_dict is itself a dict, so the two
-    are told apart by looking for the "state_dict" key rather than by type.
-    """
-    if "state_dict" in checkpoint:
-        return checkpoint["state_dict"]
-    return checkpoint
 
 
 def load_scaler(cfg: FinishPredictorConfig) -> StandardScaler:
@@ -64,17 +56,13 @@ def load_scaler(cfg: FinishPredictorConfig) -> StandardScaler:
 
     Prefers the copy saved inside the checkpoint, which is the only source
     that stays correct once training moves off the synthetic generator.
-    Falls back to rebuild_scaler() for checkpoints written before Day 8.
+    Falls back to rebuild_scaler() only for v0 checkpoints, which genuinely
+    have nowhere else to get the statistics from.
     """
     checkpoint_path = pathlib.Path(cfg.checkpoint_path)
     if checkpoint_path.exists():
-        checkpoint = torch.load(checkpoint_path, weights_only=True)
-        if "scaler_mean" in checkpoint:
-            scaler = StandardScaler()
-            scaler.mean_ = checkpoint["scaler_mean"].numpy().astype(np.float64)
-            scaler.scale_ = checkpoint["scaler_scale"].numpy().astype(np.float64)
-            scaler.var_ = scaler.scale_ ** 2
-            scaler.n_features_in_ = scaler.mean_.shape[0]
+        scaler = read_scaler(torch.load(checkpoint_path, weights_only=True))
+        if scaler is not None:
             return scaler
     return rebuild_scaler(cfg)
 
