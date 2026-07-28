@@ -30,6 +30,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from pacebrain.checkpoint import build_checkpoint
 from pacebrain.config import FinishPredictorConfig
 from pacebrain.data import FEATURE_COLS, make_sample_data, make_datasets
 from pacebrain.models import FinishTimePredictor
@@ -116,15 +117,9 @@ def train(cfg: FinishPredictorConfig) -> FinishTimePredictor:
             # state_dict holds weights/biases only — not the architecture and
             # not the preprocessing. The scaler's mean/scale ride along in the
             # same file so inference never has to guess how training normalised
-            # its inputs. Stored as tensors, not numpy arrays, so the checkpoint
-            # still loads under weights_only=True.
+            # its inputs. See checkpoint.py for the format and its versions.
             torch.save(
-                {
-                    "state_dict": model.state_dict(),
-                    "scaler_mean": torch.tensor(scaler.mean_, dtype=torch.float64),
-                    "scaler_scale": torch.tensor(scaler.scale_, dtype=torch.float64),
-                    "feature_cols": list(FEATURE_COLS),
-                },
+                build_checkpoint(model.state_dict(), scaler, FEATURE_COLS),
                 checkpoint_path,
             )
         else:
