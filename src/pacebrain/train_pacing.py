@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 
 from pacebrain.config import PacingConfig
 from pacebrain.seq_data import make_seq_datasets
-from pacebrain.seq_models import PacingLSTM
+from pacebrain.seq_models import PacingGRU, PacingLSTM
 
 
 def train_one_epoch(
@@ -69,7 +69,7 @@ def evaluate(
     return total / n
 
 
-def train(cfg: PacingConfig) -> PacingLSTM:
+def train(cfg: PacingConfig) -> nn.Module:
     torch.manual_seed(cfg.seed)
 
     # --- Data ------------------------------------------------------------------
@@ -84,7 +84,14 @@ def train(cfg: PacingConfig) -> PacingLSTM:
     print(f"Train: {len(train_ds)} races   Val: {len(val_ds)} races")
 
     # --- Model -----------------------------------------------------------------
-    model = PacingLSTM(
+    try:
+        model_cls = {"lstm": PacingLSTM, "gru": PacingGRU}[cfg.cell]
+    except KeyError:
+        raise ValueError(
+            f"Unknown cell {cfg.cell!r}. Expected 'lstm' or 'gru'."
+        ) from None
+
+    model = model_cls(
         input_size=cfg.input_size,
         hidden_size=cfg.hidden_size,
         num_layers=cfg.num_layers,
