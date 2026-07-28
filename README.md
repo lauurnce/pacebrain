@@ -153,3 +153,17 @@ Reproduce with `python src/scratch/day10_baselines.py`. Full write-ups in
 ## Progress log
 
 See `PROGRESS.md`.
+
+## Model card
+
+`MODEL_CARD.md` covers what these models are, how they were trained, and what
+they must not be used for. The headline: **both are trained entirely on
+synthetic data and have never seen a real run**, so the accuracy above
+describes how well a network recovers a known equation, not how well it
+predicts a person.
+
+## Contributing
+
+See `CONTRIBUTING.md` for setup, the four blocking checks, and the conventions
+around measuring changes (more than one seed; read results against the noise
+floor; negative results are worth committing).
