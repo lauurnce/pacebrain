@@ -40,3 +40,7 @@ Thumbs.db
 # Reports (generated artifacts)
 reports/*.png
 reports/*.jpg
+
+# coverage.py data file (regenerated on every run)
+.coverage
+htmlcov/
