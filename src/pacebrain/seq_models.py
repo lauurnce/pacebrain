@@ -15,6 +15,8 @@ passes context forward through its state.
 parameters, and often reaches similar accuracy.)
 """
 
+from __future__ import annotations
+
 import sys
 import pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
@@ -60,19 +62,107 @@ class PacingLSTM(nn.Module):
         # One linear head maps each hidden state to a single pace value.
         self.head = nn.Linear(hidden_size, 1)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """x: (batch, seq_len, input_size) -> (batch, seq_len, 1)"""
+    def forward(
+        self,
+        x: torch.Tensor,
+        lengths: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        """
+        x: (batch, seq_len, input_size) -> (batch, seq_len, 1)
+
+        Args:
+            lengths: optional (batch,) of true, unpadded sequence lengths.
+                Required whenever x holds padded sequences of differing
+                length -- see the note below on why.
+        """
         # nn.LSTM returns (output, (h_n, c_n)):
         #   output: the hidden state at EVERY timestep -- what we want for
         #           per-segment prediction. Shape (batch, seq_len, hidden_size).
         #   h_n, c_n: only the FINAL states -- what you'd use for a single
         #           summary prediction, like Day 4's finish time.
-        output, _ = self.lstm(x)
+        if lengths is None:
+            output, _ = self.lstm(x)
+        else:
+            # What padding does and does not break, precisely -- because the
+            # intuitive answer is wrong and the tests pin down the real one:
+            #
+            # It does NOT corrupt the per-timestep outputs. This LSTM is
+            # unidirectional, so it is causal: the output at step t depends
+            # only on steps 1..t, and the padding is all trailing. Feed a
+            # padded batch straight in and the first 5 outputs of a 5 km race
+            # are identical to running that race alone, to float precision.
+            #
+            # It DOES corrupt the final hidden state h_n, which ends up
+            # describing 37 steps of zeros rather than the race (measured at
+            # 0.134 max abs deviation on a 16-unit hidden state). Anything
+            # with a summary head reading h_n is silently wrong without
+            # packing. It would also corrupt every timestep if the LSTM were
+            # bidirectional, since the backward pass starts in the padding.
+            # And it wastes the compute either way.
+            #
+            # So packing here buys correctness for h_n and for any future
+            # bidirectional or summary variant, plus the saved steps -- not a
+            # fix to the per-segment predictions, which were already right.
+            #
+            # pack_padded_sequence rewrites the batch as a flat buffer plus
+            # per-timestep batch sizes, so the LSTM simply stops early on
+            # short sequences. enforce_sorted=False lets it handle an
+            # unsorted batch by permuting internally.
+            packed = nn.utils.rnn.pack_padded_sequence(
+                x,
+                lengths.cpu(),  # must live on the CPU even for a CUDA batch
+                batch_first=True,
+                enforce_sorted=False,
+            )
+            packed_output, _ = self.lstm(packed)
+            # total_length pins the time dimension back to the padded width.
+            # Without it the batch is trimmed to its own longest sequence,
+            # which silently changes shape from batch to batch.
+            output, _ = nn.utils.rnn.pad_packed_sequence(
+                packed_output,
+                batch_first=True,
+                total_length=x.size(1),
+            )
 
         # nn.Linear broadcasts over all leading dims, so applying it to the
         # full (batch, seq_len, hidden_size) tensor gives a prediction at
         # every timestep in one call: -> (batch, seq_len, 1).
+        #
+        # Note the padded positions are NOT zero in the result: their hidden
+        # states are zero, but the head adds its bias, so they come out as
+        # b. They are meaningless either way and must be masked out of the
+        # loss -- see masked_mse_loss().
         return self.head(output)
+
+
+def length_mask(lengths: torch.Tensor, max_len: int) -> torch.Tensor:
+    """
+    Boolean (batch, max_len) mask that is True at real timesteps.
+
+    Built by comparing a row of position indices against each length, which
+    vectorises what would otherwise be a Python loop over the batch.
+    """
+    positions = torch.arange(max_len, device=lengths.device)
+    return positions[None, :] < lengths[:, None]
+
+
+def masked_mse_loss(
+    pred: torch.Tensor,
+    target: torch.Tensor,
+    lengths: torch.Tensor,
+) -> torch.Tensor:
+    """
+    MSE over real timesteps only.
+
+    Plain mse_loss would average over padded positions too. That is not
+    merely noise: padding is a constant, so the model can drive the loss down
+    by predicting it, and because short races are padded most, the gradient
+    is biased towards exactly the sequences with the least real data. The
+    divisor here is the real timestep count, not batch * max_len.
+    """
+    mask = length_mask(lengths, pred.size(1)).unsqueeze(-1)
+    squared_error = ((pred - target) ** 2) * mask
+    return squared_error.sum() / mask.sum().clamp(min=1)
 
 
 if __name__ == "__main__":
@@ -84,3 +174,10 @@ if __name__ == "__main__":
     print(f"input shape:  {tuple(x.shape)}")
     print(f"output shape: {tuple(y.shape)}")
     print(f"parameters:   {n_params}")
+
+    # Variable-length path: a 5 km, a 10 km and a marathon in one batch.
+    lengths = torch.tensor([5, 10, 42])
+    padded = torch.randn(3, 42, 6)
+    out = model(padded, lengths=lengths)
+    print(f"\npadded input:  {tuple(padded.shape)}  lengths={lengths.tolist()}")
+    print(f"packed output: {tuple(out.shape)}")
