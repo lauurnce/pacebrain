@@ -1,0 +1,62 @@
+# Pre-commit hooks — catch locally what CI would otherwise catch minutes later.
+#
+# Setup:
+#     pip install -r requirements-dev.txt
+#     pre-commit install --hook-type pre-commit --hook-type pre-push
+#
+# Run against everything without committing:
+#     pre-commit run --all-files
+#
+# Design note: the ruff hook runs `ruff check` with no --fix, deliberately.
+# CI runs `ruff check` and is blocking (see ci.yml), so a hook that silently
+# rewrote code would let the two disagree about what the committed source
+# actually is. The hook's job here is to give the same verdict as CI, sooner.
+#
+# `ruff format` is intentionally absent: this codebase has never been
+# formatted with it, so adding it would rewrite nearly every file in a diff
+# that has nothing to do with any real change.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+      # Checkpoints (models/*.pt) and plots (reports/*.png) are gitignored,
+      # but a `git add -f` or a renamed output directory would slip one in,
+      # and a committed checkpoint is close to impossible to get back out of
+      # the history later.
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      # Catches a stray breakpoint() or pdb.set_trace() left in a training
+      # script, which would otherwise hang CI rather than fail it.
+      - id: debug-statements
+
+  # Pinned to the same version CI resolves, so the hook and the pipeline
+  # cannot disagree about what counts as a lint error.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.0
+    hooks:
+      - id: ruff
+        name: ruff check
+
+  - repo: local
+    hooks:
+      # On push rather than commit: the suite is ~2s today, but a commit hook
+      # that runs tests trains you to reach for --no-verify, and a hook that
+      # gets bypassed by habit protects nothing.
+      - id: pytest
+        name: pytest
+        # `python -m pytest` rather than bare `pytest`: language: system
+        # resolves the entry on PATH, and the module form works from any
+        # interpreter that has pytest installed rather than requiring the
+        # console script to be first on PATH.
+        entry: python -m pytest tests/ -q
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-push]
