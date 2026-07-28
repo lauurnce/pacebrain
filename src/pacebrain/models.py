@@ -32,7 +32,10 @@ class MLP(nn.Module):
     ):
         super().__init__()   # always call super().__init__() first
 
-        layers = []
+        # Annotated because the first append would otherwise fix the element
+        # type as nn.Linear, making every ReLU and Dropout after it a type
+        # error. The list genuinely holds mixed nn.Module subclasses.
+        layers: list[nn.Module] = []
         prev = input_size
         for width in hidden_sizes:
             layers.append(nn.Linear(prev, width))   # y = xW^T + b
