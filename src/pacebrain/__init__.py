@@ -5,6 +5,7 @@ from pacebrain.data import (
     FEATURE_COLS,
     TARGET_COL,
     RunningDataset,
+    load_running_csv,
     make_datasets,
     make_sample_data,
 )
@@ -28,6 +29,7 @@ __all__ = [
     "MLP",
     "FinishTimePredictor",
     "RunningDataset",
+    "load_running_csv",
     "make_sample_data",
     "make_datasets",
     "FEATURE_COLS",
