@@ -23,7 +23,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0.0", "ruff>=0.6.0", "pre-commit>=3.5.0"]
+dev = ["pytest>=8.0.0", "ruff>=0.6.0", "pre-commit>=3.5.0", "mypy>=1.11.0"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -36,6 +36,27 @@ include = ["pacebrain*"]
 # and no longer need the bootstrap.
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.mypy]
+# python_version is deliberately NOT pinned. Setting it to "3.9" made the
+# 3.12 CI job fail: modern mypy rejects a target below 3.10 outright, and
+# with the target below 3.12 it cannot parse numpy's own stubs, which use
+# PEP 695 `type` syntax ("Type statement is only supported in Python 3.12
+# and greater"). Unset, mypy targets whichever interpreter runs it.
+#
+# Runtime 3.9 compatibility is covered where it is actually observable —
+# the test matrix imports every module under 3.9, so syntax the version
+# cannot parse (`X | None` without a __future__ import, say) fails there.
+#
+# Scoped to the package, not the whole repo. src/scratch/ is exploratory
+# day-by-day code whose whole point is being quick and throwaway, and the
+# tests deliberately construct malformed inputs to check they are rejected —
+# type-checking either would fight the reason they exist.
+files = ["src/pacebrain"]
+# torch, pandas, sklearn and matplotlib ship incomplete or absent stubs.
+# Without this, mypy reports import errors for the dependencies rather than
+# anything about this codebase.
+ignore_missing_imports = true
 
 [tool.ruff]
 target-version = "py39"
