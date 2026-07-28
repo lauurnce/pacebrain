@@ -27,6 +27,27 @@ class FinishPredictorConfig:
     # Prevents overfitting without hand-tuning the epoch count.
     patience: int = 25
 
+    # Learning-rate schedule (ReduceLROnPlateau): when val loss stalls for
+    # lr_patience epochs, multiply the LR by lr_factor.
+    #
+    # OFF by default, because it was measured and does not earn its place —
+    # see reports/lr_schedule_experiment.md. Aggressive decay actively hurts
+    # (factor 0.5 / patience 8 gave 41.77 val MSE against 30.48 without, a
+    # 37% regression: it fires on val-loss noise and shrinks the LR 32x
+    # before early stopping halts it). The best setting found, 0.8 / 12, beat
+    # the baseline on only 2 of 4 seeds for a mean 7.5% gain, which is a coin
+    # flip rather than a result.
+    #
+    # Kept because it is one flag away and the experiment is worth repeating
+    # on real data, where a noisier loss surface may reward it.
+    #
+    # If enabling: lr_patience must stay well below `patience` above. The two
+    # counters race, and at 15 or 20 the single LR drop lands after the best
+    # epoch and changes the outcome by exactly nothing.
+    lr_schedule: bool = False
+    lr_factor: float = 0.8
+    lr_patience: int = 12
+
     # Data
     n_samples: int = 1000        # synthetic rows when no real CSV is provided
     val_fraction: float = 0.2
@@ -54,6 +75,12 @@ class PacingConfig:
 
     # Early stopping: halt if val loss doesn't improve for this many epochs.
     patience: int = 20
+
+    # Learning-rate schedule — off by default for the same reason as the
+    # finish predictor; see the note there and reports/lr_schedule_experiment.md.
+    lr_schedule: bool = False
+    lr_factor: float = 0.8
+    lr_patience: int = 6
 
     # Data
     n_races: int = 600           # synthetic races from make_sample_sequences()
