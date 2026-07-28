@@ -37,8 +37,16 @@ To work on the project itself (tests and linting), install the dev extras instea
 
 ```bash
 pip install -e ".[dev]"
-pytest          # 156 tests
+pytest          # 177 tests
 ruff check .
+```
+
+Optionally install the git hooks, which run the same lint on commit and the
+test suite on push — the same checks CI runs, several minutes earlier:
+
+```bash
+pre-commit install --hook-type pre-commit --hook-type pre-push
+pre-commit run --all-files    # check everything without committing
 ```
 
 ## Usage
