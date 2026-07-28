@@ -45,8 +45,12 @@ jobs:
           # metadata still builds, which nothing else in CI would catch.
           pip install -e . --no-deps
 
-      - name: Run tests
-        run: pytest tests/ -q
+      # Coverage runs on every matrix entry rather than once, so the floor is
+      # enforced under each supported interpreter. Version-dependent branches
+      # (the __future__ annotation paths, say) are exercised differently on
+      # 3.9 than on 3.12, and a single-version run would not see that.
+      - name: Run tests with coverage
+        run: pytest tests/ -q --cov
 
       - name: Lint with ruff
         run: ruff check .

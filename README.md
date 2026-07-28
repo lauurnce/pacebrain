@@ -37,8 +37,10 @@ To work on the project itself (tests and linting), install the dev extras instea
 
 ```bash
 pip install -e ".[dev]"
-pytest          # 177 tests
+pytest          # 233 tests
 ruff check .
+mypy            # type-checks src/pacebrain
+pytest --cov    # coverage report; CI enforces a 55% floor
 ```
 
 Optionally install the git hooks, which run the same lint on commit and the
