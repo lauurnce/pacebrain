@@ -100,7 +100,21 @@ python src/scratch/manual_grad_descent.py
 | Finish-time MLP | 4.12 | 85.5% lower error |
 | Riegel formula (baseline) | 28.36 | reference |
 
-Note: the data is synthetic, and the Riegel baseline is weak here because it uses easy training pace as the reference time proxy, which overshoots race pace.
+**Read that "85.5%" with suspicion.** The data is synthetic, and the baseline is
+handicapped in a way that flatters the model. `riegel_predict()` turns out to be
+algebraically identical to the first two factors of the data generator —
+`10 * (D/10)**1.06` reduces to `D * (D/10)**0.06`, which is exactly
+`base * distance_penalty` in `make_sample_data()`. So Riegel reproduces part of
+the target exactly, and its entire error is the three fitness factors it cannot
+see (`volume_bonus`, `long_run_bonus`, `freshness_penalty`). Their product
+averages 0.834 rather than 1.0, so Riegel overpredicts by ~20% on every row —
+systematic bias, not spread.
+
+Two further caveats: the target is a closed-form function of exactly the six
+input features, which is close to the friendliest possible learning problem;
+and the noise floor is 1.60 min, so the MLP's 4.12 min is still 2.6x above the
+best achievable error. Run `python src/scratch/riegel_audit.py` to reproduce
+these numbers. See `reports/day9_riegel_audit.md` for the full write-up.
 
 ## Progress log
 

@@ -100,3 +100,35 @@ An LSTM carries a hidden state and a cell state across timesteps, with gates dec
 
 **One thing to review:**
 Variable-length sequences. Fixed 10 segments lets batching be a simple stack; real per-km splits give 5 to 42 timesteps per race and need padding plus `pack_padded_sequence` so the LSTM skips the padded steps. Also review LSTM vs GRU trade-offs.
+
+---
+
+## Day 8 — Persisting the scaler with the checkpoint (2026-06-19)
+
+**What was built:**
+Resolved the open question from Day 6. `train_finish.py` now saves a dict rather than a bare `state_dict`: the weights, the fitted scaler's `mean_` and `scale_` as float64 tensors, and the `FEATURE_COLS` order the model was trained on. New `load_scaler()` in `inference.py` reads those statistics back, falling back to the old `rebuild_scaler()` when the checkpoint predates the change. `load_finish_model()` accepts both formats by looking for a `"state_dict"` key, so Day 4-7 checkpoints still load. `predict.py` and the Streamlit app now call `load_scaler()`.
+
+**Results:**
+End-to-end unchanged: 60 km/week at 5.5 min/km with a 28 km long run still predicts 199.0 min (3:19:00) for a marathon, matching the Day 6 smoke test exactly. 166 tests pass. Six new tests cover the round trip, the fallback paths, and the case that actually matters — a checkpoint whose statistics differ from the synthetic generator now returns the saved values instead of silently substituting synthetic ones.
+
+**PyTorch concept learned:**
+`weights_only=True` restricts `torch.load` to tensors and simple containers rather than running the full pickle machinery, which can execute arbitrary code. That constrains what a checkpoint may contain: numpy arrays are not tensors, so the scaler statistics have to be converted with `torch.tensor(...)` before saving. Keeping the flag on was worth the conversion — loading an untrusted checkpoint should never be able to run code.
+
+**One thing to review:**
+Checkpoint versioning. The dict format is self-describing enough to sniff today, but a `"version"` key would beat key-presence checks once there are three formats. Also worth reading how `safetensors` handles this, since it stores metadata alongside tensors by design.
+
+---
+
+## Day 9 — Auditing the Riegel baseline (2026-06-26)
+
+**What was built:**
+`src/scratch/riegel_audit.py`, a reproducible check on the Day 5 baseline claim, plus `reports/day9_riegel_audit.md` writing up the result and a correction to the README results table.
+
+**Results:**
+The Day 5 explanation was wrong. `riegel_predict()` is algebraically identical to the first two factors of the data generator: `10 * (D/10)**1.06` reduces to `D * (D/10)**0.06`, which is exactly `base * distance_penalty` in `make_sample_data()`. Maximum absolute difference over 5000 rows is 6.10e-05, pure float32 rounding. So the baseline is not weak — it reproduces part of the target exactly, and its entire 27.56 min error is the three fitness factors it cannot see. Their product averages 0.8345 rather than 1.0, meaning Riegel overpredicts by about 20% on every row. Per-distance MAE (6.55, 13.72, 30.42, 61.82 min for 5/10/21.1/42.2 km) confirms multiplicative bias rather than a constant offset.
+
+**Concept learned:**
+A baseline is only informative if it had a fair shot at the problem. This one was built from a subset of the generating function and then handed an input it was never designed for — Riegel predicts a race time from another race time, not from easy training pace. The other half of the lesson is the noise floor: the target carries `N(0, 2)` noise, and `E|N(0,2)| = 2*sqrt(2/pi) = 1.596 min` is the best MAE anything can achieve here. The MLP's 4.12 min is 2.6x above that, so "85.5% better than baseline" was measuring the baseline's handicap more than the model's skill.
+
+**One thing to review:**
+Building an honest baseline set — predicting the training mean, a linear regression on the same six features, and a bias-corrected Riegel. If the MLP cannot clearly beat a linear model on data this well behaved, the extra capacity is not earning its place.

@@ -40,20 +40,58 @@ def load_finish_model(cfg: FinishPredictorConfig) -> FinishTimePredictor:
         hidden_sizes=cfg.hidden_sizes,
         dropout=cfg.dropout,
     )
-    model.load_state_dict(torch.load(checkpoint_path, weights_only=True))
+    model.load_state_dict(_extract_state_dict(torch.load(checkpoint_path, weights_only=True)))
     model.eval()
     return model
 
 
+def _extract_state_dict(checkpoint: dict) -> dict:
+    """
+    Pull the weights out of a checkpoint, old format or new.
+
+    Day 4-7 saved bare state_dicts; from Day 8 the checkpoint is a dict that
+    also carries the scaler. A bare state_dict is itself a dict, so the two
+    are told apart by looking for the "state_dict" key rather than by type.
+    """
+    if "state_dict" in checkpoint:
+        return checkpoint["state_dict"]
+    return checkpoint
+
+
+def load_scaler(cfg: FinishPredictorConfig) -> StandardScaler:
+    """
+    Load the StandardScaler that was fitted during training.
+
+    Prefers the copy saved inside the checkpoint, which is the only source
+    that stays correct once training moves off the synthetic generator.
+    Falls back to rebuild_scaler() for checkpoints written before Day 8.
+    """
+    checkpoint_path = pathlib.Path(cfg.checkpoint_path)
+    if checkpoint_path.exists():
+        checkpoint = torch.load(checkpoint_path, weights_only=True)
+        if "scaler_mean" in checkpoint:
+            scaler = StandardScaler()
+            scaler.mean_ = checkpoint["scaler_mean"].numpy().astype(np.float64)
+            scaler.scale_ = checkpoint["scaler_scale"].numpy().astype(np.float64)
+            scaler.var_ = scaler.scale_ ** 2
+            scaler.n_features_in_ = scaler.mean_.shape[0]
+            return scaler
+    return rebuild_scaler(cfg)
+
+
 def rebuild_scaler(cfg: FinishPredictorConfig) -> StandardScaler:
     """
-    Rebuild the StandardScaler that was fitted during training.
+    Refit the training StandardScaler by regenerating the training data.
 
-    The scaler is NOT stored in the checkpoint (state_dict holds only model
-    weights). But because the training data is synthetic and seeded, calling
+    Correct ONLY while training uses the seeded synthetic generator: calling
     make_sample_data + make_datasets with the same seed and val_fraction
     reproduces the exact same train split, so the refitted scaler has
     identical mean/std to the one used in training.
+
+    It is wrong the moment training moves to a real CSV, because this function
+    always regenerates synthetic data regardless of what the model was trained
+    on — and the mismatch is silent, since the feature count never changes.
+    Prefer load_scaler(), which reads the scaler saved with the checkpoint.
     """
     df = make_sample_data(n_samples=cfg.n_samples, seed=cfg.seed)
     _, _, scaler = make_datasets(df, val_fraction=cfg.val_fraction, seed=cfg.seed)
