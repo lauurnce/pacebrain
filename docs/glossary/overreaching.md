@@ -1,0 +1,3 @@
+# Overreaching
+
+Training stress accumulating faster than recovery. Short term it is a deliberate part of a hard block; sustained without recovery it becomes overtraining, where performance declines and the fix is weeks rather than days.
