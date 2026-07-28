@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import numpy as np
 import torch
+from torch.nn.utils import rnn as nn_utils_rnn
 from torch.utils.data import Dataset
 
 # Every race is split into N_SEGMENTS equal-distance segments, regardless
@@ -196,3 +197,166 @@ def make_seq_datasets(
     val_ds = PacingSequenceDataset(X_val, y_val, mean=mean, std=std)
 
     return train_ds, val_ds, (mean, std)
+
+
+# ---------------------------------------------------------------------------
+# Variable-length sequences — the realistic version
+# ---------------------------------------------------------------------------
+#
+# N_SEGMENTS above splits every race into 10 equal parts, which makes each
+# race a different physical distance per segment: segment 1 of a 5K is 0.5 km,
+# of a marathon 4.22 km. Real per-km splits do the opposite — the segment is
+# always a kilometre and the COUNT varies, 5 for a 5K up to 42 for a marathon.
+#
+# That is both more realistic and harder: sequences in a batch no longer share
+# a shape, so they must be padded, and the padding then has to be hidden from
+# the LSTM (see PacingLSTM.forward) and from the loss (masked_mse_loss).
+
+
+def segments_for_distance(race_distance_km: float) -> int:
+    """Number of per-km splits for a race — 5 for a 5K, 42 for a marathon."""
+    return max(1, int(round(float(race_distance_km))))
+
+
+def make_variable_length_sequences(
+    n_races: int = 600,
+    seed: int = 42,
+) -> list[tuple[torch.Tensor, torch.Tensor]]:
+    """
+    Generate per-km pacing sequences, one timestep per kilometre.
+
+    The pacing physics is identical to make_sample_sequences() — same base
+    pace, same quadratic back-half fade driven by the same endurance
+    deficits. Only the time axis changes: `segment_fraction` is still the
+    midpoint of a segment as a fraction of the race, so it stays comparable
+    across races of different lengths, but there are now `round(distance)`
+    of them instead of always 10.
+
+    Returned per race rather than as one tensor because the races have
+    different lengths — stacking is the caller's job, via pad_collate().
+
+    Returns:
+        list of (X_i, y_i) with X_i float32 (T_i, 6) and y_i float32 (T_i, 1)
+    """
+    rng = np.random.default_rng(seed)
+
+    weekly_mileage = rng.uniform(20, 120, n_races).astype(np.float32)
+    avg_pace = rng.uniform(4.5, 7.5, n_races).astype(np.float32)
+    long_run = rng.uniform(10, 35, n_races).astype(np.float32)
+    runs_per_week = rng.uniform(3, 7, n_races).astype(np.float32)
+    race_distance = rng.choice([5.0, 10.0, 21.1, 42.2], n_races).astype(np.float32)
+
+    races = []
+    for i in range(n_races):
+        n_seg = segments_for_distance(race_distance[i])
+        fracs = ((np.arange(n_seg) + 0.5) / n_seg).astype(np.float32)
+
+        base_pace = avg_pace[i] * 0.92 * (race_distance[i] / 10.0) ** 0.05
+        long_run_deficit = np.clip(1.0 - long_run[i] / race_distance[i], 0.0, 1.0)
+        mileage_deficit = np.clip((60.0 - weekly_mileage[i]) / 60.0, 0.0, 1.0)
+        fade_strength = 1.5 * (long_run_deficit + mileage_deficit) * (
+            race_distance[i] / 42.2
+        )
+
+        fade = 1.0 + fade_strength * np.maximum(0.0, fracs - 0.5) ** 2
+        pace = base_pace * fade + rng.normal(0, 0.08, n_seg)
+        pace = np.clip(pace, PACE_MIN, PACE_MAX).astype(np.float32)
+
+        static = np.array(
+            [
+                race_distance[i],
+                weekly_mileage[i],
+                avg_pace[i],
+                long_run[i],
+                runs_per_week[i],
+            ],
+            dtype=np.float32,
+        )
+        X_i = np.concatenate(
+            [fracs[:, None], np.tile(static, (n_seg, 1))], axis=1
+        ).astype(np.float32)
+
+        races.append((torch.from_numpy(X_i), torch.from_numpy(pace[:, None])))
+
+    return races
+
+
+def pad_collate(
+    batch: list[tuple[torch.Tensor, torch.Tensor]],
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """
+    Collate variable-length races into a padded batch plus their lengths.
+
+    Pass as DataLoader(..., collate_fn=pad_collate). The default collate
+    cannot be used here at all: it calls torch.stack, which requires every
+    sample to share a shape and raises the moment a 5 km and a marathon land
+    in the same batch.
+
+    Lengths are returned alongside because padding is only safe if the model
+    and the loss both know where the real data stops.
+
+    Returns:
+        X: (batch, max_T, 6), y: (batch, max_T, 1), lengths: (batch,)
+    """
+    xs, ys = zip(*batch)
+    lengths = torch.tensor([len(x) for x in xs], dtype=torch.long)
+    X = nn_utils_rnn.pad_sequence(list(xs), batch_first=True)
+    y = nn_utils_rnn.pad_sequence(list(ys), batch_first=True)
+    return X, y, lengths
+
+
+class VariableLengthPacingDataset(Dataset):
+    """
+    Dataset over per-km races of differing length.
+
+    Deliberately thinner than PacingSequenceDataset: it holds a list, not a
+    stacked tensor, and normalisation is applied per race at construction so
+    __getitem__ stays a plain index. Use with pad_collate.
+    """
+
+    def __init__(
+        self,
+        races: list[tuple[torch.Tensor, torch.Tensor]],
+        mean: torch.Tensor | None = None,
+        std: torch.Tensor | None = None,
+    ):
+        if mean is not None and std is not None:
+            races = [((X - mean) / std, y) for X, y in races]
+        self.races = races
+
+    def __len__(self) -> int:
+        return len(self.races)
+
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
+        return self.races[idx]
+
+
+def make_variable_seq_datasets(
+    n_races: int = 600,
+    val_fraction: float = 0.2,
+    seed: int = 42,
+) -> tuple[VariableLengthPacingDataset, VariableLengthPacingDataset, tuple[torch.Tensor, torch.Tensor]]:
+    """
+    Variable-length counterpart to make_seq_datasets().
+
+    Splits by race and fits mean/std on training races only, exactly as the
+    fixed-length version does. The one difference is that the stats are
+    computed over concatenated timesteps rather than a reshape, since the
+    races cannot be stacked into a rectangular tensor.
+    """
+    races = make_variable_length_sequences(n_races=n_races, seed=seed)
+
+    rng = np.random.default_rng(seed)
+    idx = rng.permutation(n_races)
+    n_val = int(n_races * val_fraction)
+    val_races = [races[i] for i in idx[:n_val]]
+    train_races = [races[i] for i in idx[n_val:]]
+
+    flat = torch.cat([X for X, _ in train_races], dim=0)
+    mean, std = flat.mean(dim=0), flat.std(dim=0)
+
+    return (
+        VariableLengthPacingDataset(train_races, mean=mean, std=std),
+        VariableLengthPacingDataset(val_races, mean=mean, std=std),
+        (mean, std),
+    )
