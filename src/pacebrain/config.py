@@ -39,6 +39,11 @@ class FinishPredictorConfig:
 
 @dataclass
 class PacingConfig:
+    # Recurrent cell: "lstm" or "gru". The GRU has ~25% fewer parameters at
+    # the same hidden size (13,889 vs 18,497 at hidden_size=64).
+    # See reports/gru_vs_lstm.md for how they actually compare here.
+    cell: str = "lstm"
+
     # Model architecture
     input_size: int = 6          # must match len(SEQ_FEATURES) in seq_data.py
     hidden_size: int = 64        # width of the LSTM hidden state
