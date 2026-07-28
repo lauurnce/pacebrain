@@ -1,0 +1,36 @@
+# Everything here would be copied into the build context and then either
+# ignored or actively harmful. A large context is also slow to send to the
+# daemon before the build even starts.
+
+# Virtualenvs — host-specific paths and binaries; would shadow the image's
+# own site-packages if copied in.
+.venv/
+venv/
+env/
+
+.git/
+.github/
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+build/
+dist/
+
+# Checkpoints and plots are build outputs. The image trains its own; copying
+# a host checkpoint in would silently override it with something whose
+# provenance is unknown. Mount it at run time instead if that is what you want.
+models/
+reports/
+data/
+
+notebooks/
+tests/
+docs/
+
+.DS_Store
+.env
+.claude/
