@@ -110,6 +110,30 @@ Run it from the repo root, and train a model first — the app needs `models/fin
 
 Sliders go wider than the ranges the model was trained on; the app warns you when an input falls outside them, because predictions there are extrapolation.
 
+### Demo app in Docker
+
+```bash
+docker build -t pacebrain .
+docker run --rm -p 8501:8501 pacebrain
+```
+
+Then open <http://localhost:8501>.
+
+The image trains a model during the build, so it works straight away rather
+than starting up and telling you to train one. Training is seeded and takes
+under a minute; it happens after the dependency layer, so editing source does
+not re-download torch.
+
+To use a checkpoint you trained yourself, mount over it:
+
+```bash
+docker run --rm -p 8501:8501 -v "$PWD/models:/app/models" pacebrain
+```
+
+The image installs the CPU-only torch wheel. The default PyPI build bundles
+the CUDA runtime and is about 2 GB larger, which buys nothing here — the app
+runs a 2,561-parameter MLP on one row at a time.
+
 ## Running the scratch scripts
 
 ```bash
