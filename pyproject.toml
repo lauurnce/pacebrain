@@ -23,7 +23,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0.0", "ruff>=0.6.0", "pre-commit>=3.5.0", "mypy>=1.11.0"]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.6.0",
+    "pre-commit>=3.5.0",
+    "mypy>=1.11.0",
+    "pytest-cov>=5.0.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -36,6 +42,30 @@ include = ["pacebrain*"]
 # and no longer need the bootstrap.
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["src/pacebrain"]
+# Branch coverage as well as line: a partially-tested `if` reports as fully
+# covered otherwise, which is exactly the case worth knowing about in the
+# format-sniffing and validation code.
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+# The floor is set just below where the package actually sits, so it catches
+# a real regression without failing the build for rounding. Raise it as
+# coverage improves — the point of a ratchet is that it only goes one way.
+# Currently the three training modules are the entire gap; everything that
+# is imported rather than executed as a script is at or near 100%.
+fail_under = 55
+exclude_lines = [
+    "pragma: no cover",
+    # Several modules double as runnable scripts (python src/pacebrain/eval.py)
+    # because the PROGRESS.md workflow depends on it. Those blocks never run
+    # under import, so counting them would penalise the design rather than
+    # measure the tests.
+    "if __name__ == .__main__.:",
+]
 
 [tool.mypy]
 # python_version is deliberately NOT pinned. Setting it to "3.9" made the
