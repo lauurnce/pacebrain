@@ -132,3 +132,19 @@ A baseline is only informative if it had a fair shot at the problem. This one wa
 
 **One thing to review:**
 Building an honest baseline set — predicting the training mean, a linear regression on the same six features, and a bias-corrected Riegel. If the MLP cannot clearly beat a linear model on data this well behaved, the extra capacity is not earning its place.
+
+---
+
+## Day 10 — An honest baseline set (2026-07-28)
+
+**What was built:**
+`src/pacebrain/baselines.py`, implementing the three baselines Day 9 asked for: the training mean, Riegel rescaled by a single constant fitted on train, and least squares on the same six features the MLP gets. `evaluate_baselines()` fits all of them on the training split and scores them on validation using the same seeded permutation the MLP is scored on. `src/scratch/day10_baselines.py` prints the comparison table, `reports/day10_baselines.md` writes it up, and the README results table is replaced with all five rows plus the noise floor.
+
+**Results:**
+MAE on the 200-row validation set: mean of train 67.97, raw Riegel 28.36, corrected Riegel 21.82, linear regression 16.89, MLP 4.12, against a noise floor of 1.60. So the honest headline is that the MLP beats the strongest baseline by **75.6%**, not the 85.5% the README used to claim against a mis-specified Riegel. The bias correction is the nicest confirmation: the fitted scale is 0.8135 and Day 9 predicted 0.8345 from first principles, and one constant recovers 6.5 of Riegel's 28.4 minutes without the formula learning anything. Day 9's open question is answered — linear regression is a real contender and the MLP still cuts its error by three quarters, because the generator is a product of five terms and no additive model can represent that. 12 new tests, 189 total.
+
+**Concept learned:**
+Baselines are a ladder, not a single rung. Each of these sees strictly more than the one above it, so the *gaps* localise where the model's advantage comes from: mean to Riegel is "features help", raw to corrected Riegel is "the error was bias", corrected Riegel to linear is "the other four features matter", linear to MLP is "the relationship is nonlinear". One baseline gives a number; a ladder gives an explanation. The second habit is reading every score against the noise floor rather than zero — a perfect model scores 1.60 min here, so the MLP's 4.12 is 2.6x off the achievable best, which "75.6% better than linear" completely hides.
+
+**One thing to review:**
+A log-space linear baseline. The generator is multiplicative, so logs turn it into a sum and a linear fit on log-transformed features should close most of the gap to the MLP. If it does, the honest claim weakens from "the MLP beats linear" to "the MLP rediscovered a log-linear relationship that one line of feature engineering would have handed it" — which is the more useful thing to know, and the natural Day 11.
