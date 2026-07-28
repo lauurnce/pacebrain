@@ -93,6 +93,24 @@ def train(cfg: FinishPredictorConfig) -> FinishTimePredictor:
     loss_fn = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr)
 
+    # ReduceLROnPlateau watches val loss and cuts the LR when it stalls.
+    # Unlike a step or cosine schedule it needs no guess about WHEN progress
+    # will stall — it reacts to the loss actually flattening.
+    #
+    # Off by default: measured on this problem it does not help, and tuned
+    # badly it hurts a lot. See config.py and
+    # reports/lr_schedule_experiment.md for the numbers.
+    scheduler = (
+        torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="min",
+            factor=cfg.lr_factor,
+            patience=cfg.lr_patience,
+        )
+        if cfg.lr_schedule
+        else None
+    )
+
     print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}\n")
 
     # --- Training loop with early stopping ------------------------------------
@@ -109,6 +127,17 @@ def train(cfg: FinishPredictorConfig) -> FinishTimePredictor:
 
         train_losses.append(train_loss)
         val_losses.append(val_loss)
+
+        # Step on val loss, not train: the point is to slow down when
+        # GENERALISATION stalls. Train loss almost always keeps falling, so
+        # scheduling on it would rarely trigger and would reward overfitting
+        # when it did.
+        if scheduler is not None:
+            prev_lr = optimizer.param_groups[0]["lr"]
+            scheduler.step(val_loss)
+            new_lr = optimizer.param_groups[0]["lr"]
+            if new_lr < prev_lr:
+                print(f"Epoch {epoch:3d}: LR {prev_lr:.2e} -> {new_lr:.2e}")
 
         improved = val_loss < best_val
         if improved:
