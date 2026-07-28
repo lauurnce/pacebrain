@@ -47,6 +47,27 @@ def mae_minutes(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     return float(np.mean(np.abs(y_true - y_pred)))
 
 
+def rmse_minutes(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+    """
+    Root mean squared error in minutes.
+
+    Reported alongside MAE because the two answer different questions and
+    this application cares about both. MAE is the average miss — the number
+    to quote to a runner, because "wrong by 4 minutes on average" is
+    immediately meaningful. RMSE squares before averaging, so a single
+    30-minute blow-up moves it far more than thirty 1-minute misses do.
+
+    For race pacing the tail is what hurts: a prediction that is quietly
+    good most of the time but occasionally catastrophic will send someone
+    out at a pace they cannot hold. MAE cannot see that; RMSE can.
+
+    Reading them together is what makes them useful. RMSE >= MAE always,
+    and the size of the gap is the story: close together means errors are
+    uniform, far apart means a few large misses dominate.
+    """
+    return float(np.sqrt(np.mean((y_true - y_pred) ** 2)))
+
+
 # ---------------------------------------------------------------------------
 # Riegel baseline
 # ---------------------------------------------------------------------------
@@ -176,15 +197,28 @@ def run_evaluation(cfg: FinishPredictorConfig) -> None:
     riegel_mae = mae_minutes(y_true_riegel, riegel_pred)
 
     # --- Print results -------------------------------------------------------
+    model_rmse = rmse_minutes(y_true_model, y_pred_model)
+    riegel_rmse = rmse_minutes(y_true_riegel, riegel_pred)
     improvement = (riegel_mae - model_mae) / riegel_mae * 100
-    print("\n=== Day 5 Evaluation (validation set) ===")
+
+    print("\n=== Evaluation (validation set) ===")
     print(f"  Samples : {len(val_df)}")
-    print(f"  MLP MAE : {model_mae:.2f} min")
-    print(f"  Riegel  : {riegel_mae:.2f} min")
+    print(f"  {'':8}{'MAE':>9}{'RMSE':>9}{'ratio':>9}")
+    for name, mae, rmse in (
+        ("MLP", model_mae, model_rmse),
+        ("Riegel", riegel_mae, riegel_rmse),
+    ):
+        print(f"  {name:<8}{mae:>9.2f}{rmse:>9.2f}{rmse / mae:>9.2f}")
+
+    # RMSE/MAE is the shape of the error distribution in one number. It is
+    # sqrt(pi/2) = 1.2533 for pure gaussian noise, so near that means the
+    # misses are uniform; well above it means a few large ones dominate and
+    # the average is hiding a tail.
+    print("\n  (ratio 1.25 = gaussian errors; higher = a few large misses dominate)")
     if improvement > 0:
-        print(f"  MLP beats Riegel by {improvement:.1f}%")
+        print(f"  MLP beats Riegel by {improvement:.1f}% on MAE")
     else:
-        print(f"  Riegel beats MLP by {-improvement:.1f}%  (model needs improvement)")
+        print(f"  Riegel beats MLP by {-improvement:.1f}% on MAE  (model needs improvement)")
 
     # --- Save scatter plot ---------------------------------------------------
     plot_comparison(
