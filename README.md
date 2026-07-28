@@ -112,26 +112,35 @@ python src/scratch/manual_grad_descent.py
 
 ## Results
 
-| Model | MAE (min) | vs Riegel baseline |
-|---|---|---|
-| Finish-time MLP | 4.12 | 85.5% lower error |
-| Riegel formula (baseline) | 28.36 | reference |
+Validation set, 200 rows. Every baseline is fitted on the training split only.
 
-**Read that "85.5%" with suspicion.** The data is synthetic, and the baseline is
-handicapped in a way that flatters the model. `riegel_predict()` turns out to be
-algebraically identical to the first two factors of the data generator —
-`10 * (D/10)**1.06` reduces to `D * (D/10)**0.06`, which is exactly
-`base * distance_penalty` in `make_sample_data()`. So Riegel reproduces part of
-the target exactly, and its entire error is the three fitness factors it cannot
-see (`volume_bonus`, `long_run_bonus`, `freshness_penalty`). Their product
-averages 0.834 rather than 1.0, so Riegel overpredicts by ~20% on every row —
-systematic bias, not spread.
+| Predictor | Features seen | MAE (min) | x noise floor |
+|---|---|---|---|
+| Mean of train | none | 67.97 | 42.6 |
+| Riegel (raw) | 2, mis-specified | 28.36 | 17.8 |
+| Riegel x 0.8135 | 2, calibrated | 21.82 | 13.7 |
+| Linear regression | all 6 | 16.89 | 10.6 |
+| **Finish-time MLP** | all 6 | **4.12** | **2.6** |
+| *Noise floor* | — | *1.60* | *1.0* |
 
-Two further caveats: the target is a closed-form function of exactly the six
-input features, which is close to the friendliest possible learning problem;
-and the noise floor is 1.60 min, so the MLP's 4.12 min is still 2.6x above the
-best achievable error. Run `python src/scratch/riegel_audit.py` to reproduce
-these numbers. See `reports/day9_riegel_audit.md` for the full write-up.
+The MLP beats the strongest honest baseline (linear regression) by 75.6%. That
+is the number to quote — **not** the "85.5% vs Riegel" this table used to lead
+with, which measured the baseline's handicap more than the model's skill.
+`riegel_predict()` is algebraically the first two factors of the data generator
+and was then handed an input it was never designed for (easy training pace, not
+a previous race time). Rescaling it by a single fitted constant recovers 6.5 min
+of that, confirming the error was systematic bias rather than spread.
+
+Linear regression is the baseline that earns the MLP its place: on a target this
+well behaved a linear fit is a genuine contender, and the MLP still cuts its
+error by three quarters — the multiplicative structure of the generator is real
+nonlinearity, not noise. Two caveats stand: the target is a closed-form function
+of exactly the six input features, about the friendliest learning problem there
+is; and at 4.12 min the MLP remains 2.6x above the 1.60 min noise floor, so
+there is signal left on the table.
+
+Reproduce with `python src/scratch/day10_baselines.py`. Full write-ups in
+`reports/day10_baselines.md` and `reports/day9_riegel_audit.md`.
 
 ## Progress log
 
