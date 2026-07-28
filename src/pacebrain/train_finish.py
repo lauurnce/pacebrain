@@ -31,7 +31,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from pacebrain.config import FinishPredictorConfig
-from pacebrain.data import make_sample_data, make_datasets
+from pacebrain.data import FEATURE_COLS, make_sample_data, make_datasets
 from pacebrain.models import FinishTimePredictor
 
 
@@ -75,7 +75,7 @@ def train(cfg: FinishPredictorConfig) -> FinishTimePredictor:
 
     # --- Data ------------------------------------------------------------------
     df = make_sample_data(n_samples=cfg.n_samples, seed=cfg.seed)
-    train_ds, val_ds, _ = make_datasets(df, val_fraction=cfg.val_fraction, seed=cfg.seed)
+    train_ds, val_ds, scaler = make_datasets(df, val_fraction=cfg.val_fraction, seed=cfg.seed)
 
     # DataLoader handles shuffling and batching; num_workers=0 is safe on Windows
     train_loader = DataLoader(train_ds, batch_size=cfg.batch_size, shuffle=True, num_workers=0)
@@ -113,8 +113,20 @@ def train(cfg: FinishPredictorConfig) -> FinishTimePredictor:
         if improved:
             best_val = val_loss
             epochs_no_improve = 0
-            # state_dict: save only weights/biases (not the whole model object)
-            torch.save(model.state_dict(), checkpoint_path)
+            # state_dict holds weights/biases only — not the architecture and
+            # not the preprocessing. The scaler's mean/scale ride along in the
+            # same file so inference never has to guess how training normalised
+            # its inputs. Stored as tensors, not numpy arrays, so the checkpoint
+            # still loads under weights_only=True.
+            torch.save(
+                {
+                    "state_dict": model.state_dict(),
+                    "scaler_mean": torch.tensor(scaler.mean_, dtype=torch.float64),
+                    "scaler_scale": torch.tensor(scaler.scale_, dtype=torch.float64),
+                    "feature_cols": list(FEATURE_COLS),
+                },
+                checkpoint_path,
+            )
         else:
             epochs_no_improve += 1
 
@@ -148,8 +160,9 @@ def train(cfg: FinishPredictorConfig) -> FinishTimePredictor:
     plt.savefig(plot_path, dpi=120)
     print(f"Loss curve: {plot_path}")
 
-    # Load best weights back before returning
-    model.load_state_dict(torch.load(checkpoint_path, weights_only=True))
+    # Load best weights back before returning. The checkpoint is now a dict,
+    # so pull the state_dict out rather than passing the whole thing.
+    model.load_state_dict(torch.load(checkpoint_path, weights_only=True)["state_dict"])
     return model
 
 

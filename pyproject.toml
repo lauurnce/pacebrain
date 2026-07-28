@@ -62,3 +62,4 @@ select = [
 "src/pacebrain/train_finish.py" = ["E402", "I001"]
 "src/pacebrain/train_pacing.py" = ["E402", "I001"]
 "app/app.py" = ["E402", "I001"]
+"src/scratch/riegel_audit.py" = ["E402", "I001"]
