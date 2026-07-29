@@ -96,6 +96,18 @@ files = ["src/pacebrain"]
 # anything about this codebase.
 ignore_missing_imports = true
 
+# Every function in the package is annotated, so this is on and blocking —
+# the same reasoning as the type-check job itself: introducing it
+# non-blocking would mean a warning nobody reads.
+#
+# It matters more than it looks. Without it mypy skips the *body* of an
+# unannotated function entirely, so a single missing signature silently
+# turns off checking for everything inside it. The gap it closed here was
+# train.py, whose four functions were bare — which is to say the module
+# doing the tensor manipulation most likely to have a shape bug was the one
+# module mypy was not reading.
+disallow_untyped_defs = true
+
 [tool.ruff]
 target-version = "py39"
 line-length = 100

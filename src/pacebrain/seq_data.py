@@ -142,7 +142,7 @@ class PacingSequenceDataset(Dataset):
         y: torch.Tensor,
         mean: torch.Tensor | None = None,
         std: torch.Tensor | None = None,
-    ):
+    ) -> None:
         if mean is not None and std is not None:
             X = (X - mean) / std
         self.X = X
@@ -319,7 +319,7 @@ class VariableLengthPacingDataset(Dataset):
         races: list[tuple[torch.Tensor, torch.Tensor]],
         mean: torch.Tensor | None = None,
         std: torch.Tensor | None = None,
-    ):
+    ) -> None:
         if mean is not None and std is not None:
             races = [((X - mean) / std, y) for X, y in races]
         self.races = races

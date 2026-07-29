@@ -5,9 +5,13 @@ Run:  python -m pacebrain.train   (from repo root with src/ on PYTHONPATH)
   or: python src/pacebrain/train.py
 """
 
+from __future__ import annotations
+
 import sys
 import pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
+
+from typing import Iterator
 
 import torch
 import torch.nn as nn
@@ -29,7 +33,9 @@ CHECKPOINT_PATH = pathlib.Path("models/mlp_synthetic.pt")
 PLOT_PATH = pathlib.Path("reports/day2_loss_curve.png")
 
 
-def make_batches(X, y, batch_size):
+def make_batches(
+    X: torch.Tensor, y: torch.Tensor, batch_size: int
+) -> Iterator[tuple[torch.Tensor, torch.Tensor]]:
     """Yield (X_batch, y_batch) pairs, shuffled each call."""
     n = len(X)
     idx = torch.randperm(n)
@@ -38,7 +44,13 @@ def make_batches(X, y, batch_size):
         yield X[batch], y[batch]
 
 
-def train_one_epoch(model, X_train, y_train, loss_fn, optimizer):
+def train_one_epoch(
+    model: nn.Module,
+    X_train: torch.Tensor,
+    y_train: torch.Tensor,
+    loss_fn: nn.Module,
+    optimizer: torch.optim.Optimizer,
+) -> float:
     """
     model.train() switches on dropout / batch-norm training behaviour.
     For each mini-batch: zero grads -> forward -> loss -> backward -> step.
@@ -55,7 +67,9 @@ def train_one_epoch(model, X_train, y_train, loss_fn, optimizer):
     return total_loss / len(X_train)
 
 
-def evaluate(model, X_val, y_val, loss_fn):
+def evaluate(
+    model: nn.Module, X_val: torch.Tensor, y_val: torch.Tensor, loss_fn: nn.Module
+) -> float:
     """
     model.eval() disables dropout so every run is deterministic.
     torch.no_grad() skips building the computation graph — faster, less memory.
@@ -67,7 +81,7 @@ def evaluate(model, X_val, y_val, loss_fn):
     return loss.item()
 
 
-def main():
+def main() -> None:
     # Data
     X, y = make_synthetic_data(n_samples=500, n_features=INPUT_SIZE)
     X_train, X_val, y_train, y_val = train_val_split(X, y)
