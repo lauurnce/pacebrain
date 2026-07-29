@@ -148,3 +148,23 @@ Baselines are a ladder, not a single rung. Each of these sees strictly more than
 
 **One thing to review:**
 A log-space linear baseline. The generator is multiplicative, so logs turn it into a sum and a linear fit on log-transformed features should close most of the gap to the MLP. If it does, the honest claim weakens from "the MLP beats linear" to "the MLP rediscovered a log-linear relationship that one line of feature engineering would have handed it" — which is the more useful thing to know, and the natural Day 11.
+
+---
+
+## Day 11 — One transform beats the network (2026-07-29)
+
+**What was built:**
+`log_features()`, `fit_log_linear()` and `log_linear_prediction()` in `baselines.py`, plus `LOG_FEATURE_NAMES` so the fitted coefficients stay interpretable against a named column order. `evaluate_baselines()` gained a `log_linear` row. `src/scratch/day11_log_linear.py` prints the comparison alongside the generator's own constants, `reports/day11_log_linear.md` writes it up, and the README results table and headline claim were corrected. 6 new tests, 278 total.
+
+**Results:**
+Day 10 predicted a log-space fit would "close most of the gap to the MLP". It closed all of it. Validation MAE: log-linear **1.98 min** against the MLP's 4.12, a **51.9%** win for the baseline, sitting 1.24x above the 1.60 min noise floor where the network sits at 2.58x. The coefficients are the evidence that this is recovery rather than fitting — they come back as the generator's own constants: 1.0556 vs a true 1.06 on log-distance, -0.007863 vs -0.008 on mileage, -0.014568 vs -0.015 on long run, +0.005083 vs +0.005 on freshness. `runs_per_week`, which the generator never uses, comes back at 0.0017. The loosest is the pace exponent at 0.959 against 1.0, which is the additive `N(0, 2)` noise turning heteroscedastic under the log and biasing the fit — a real limitation of the approach, not a rounding error.
+
+**Concept learned:**
+Model capacity substitutes for knowledge about the problem, and it substitutes badly. The MLP spent 189 epochs of gradient descent discovering an approximation to a relationship one `np.log` hands over exactly — in closed form, with no hyperparameters, no seed, and no training run. Its 4.12 min is the price of learning the shape of the problem from scratch instead of being told it. An MLP is universal in the sense that it *can* approximate this target, not in the sense that it *should have to*. Where structure is known — and multiplicative structure among physical quantities usually is — encoding it beats learning it on accuracy, determinism and cost at once.
+
+The second half of the lesson is about baselines again. Every revision of this project's headline has made the baseline stronger and the model's advantage smaller: 85.5% at Day 5, 75.6% at Day 10, negative at Day 11. A number that has moved that far in one direction was never a measurement of the model. It was a measurement of how much thought had gone into what it was being compared against.
+
+Worth being clear about what this does *not* show: the log-linear model was handed the generator's structure by someone who had read the generator. On real data nobody knows the true functional form, and finding it is exactly the MLP's reason to exist. A closed-form synthetic target cannot test that, so this result indicts the benchmark as much as the model.
+
+**One thing to review:**
+Break the assumption the transform depends on. Add an interaction the log form cannot represent — volume mattering more at marathon distance than at 5 km, say — and rerun both. If the MLP overtakes the log-linear model there, that is the first measured evidence in this project that the extra capacity earns its cost, rather than an assumption that it must.
