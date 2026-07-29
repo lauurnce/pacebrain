@@ -23,7 +23,7 @@ from pacebrain import train_finish, train_pacing
 from pacebrain.checkpoint import detect_version, read_scaler
 from pacebrain.config import FinishPredictorConfig, PacingConfig
 from pacebrain.data import FEATURE_COLS, make_datasets, make_sample_data
-from pacebrain.models import FinishTimePredictor
+from pacebrain.models import MLP, FinishTimePredictor
 from pacebrain.seq_data import SEQ_FEATURES, make_seq_datasets
 from pacebrain.seq_models import PacingLSTM
 
@@ -134,6 +134,93 @@ def test_toy_evaluate_puts_the_model_in_eval_mode():
     model.train()
     train_toy.evaluate(model, torch.randn(8, 4), torch.randn(8, 1), nn.MSELoss())
     assert not model.training
+
+
+# ---------------------------------------------------------------------------
+# train.py main() — the script entry point
+#
+# The three helpers above are covered directly, but main() is what actually
+# runs when someone follows the README, and it was the last uncovered block in
+# the module. It has no config object to shrink, so EPOCHS is patched on the
+# module and the relative output paths are handled by chdir.
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def toy_main(tmp_path, monkeypatch):
+    """Run train.main() cheaply, in a tmp directory, and hand back the paths."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(train_toy, "EPOCHS", 3)
+    return tmp_path
+
+
+def test_toy_main_writes_a_checkpoint_and_a_loss_curve(toy_main, capsys):
+    train_toy.main()
+
+    checkpoint = toy_main / train_toy.CHECKPOINT_PATH
+    plot = toy_main / train_toy.PLOT_PATH
+    assert checkpoint.exists()
+    assert plot.exists()
+    # matplotlib writing a truncated file would still satisfy exists().
+    assert plot.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n"
+
+    out = capsys.readouterr().out
+    assert "Best val loss:" in out
+    assert "Train samples: 400  Val samples: 100" in out
+
+
+def test_toy_main_checkpoint_loads_into_the_same_architecture(toy_main):
+    """
+    A checkpoint that cannot be loaded back is worse than none — the failure
+    surfaces days later, in whatever tries to use it.
+    """
+    train_toy.main()
+
+    model = MLP(
+        input_size=train_toy.INPUT_SIZE,
+        hidden_sizes=train_toy.HIDDEN_SIZES,
+        output_size=1,
+    )
+    state = torch.load(toy_main / train_toy.CHECKPOINT_PATH, weights_only=True)
+    model.load_state_dict(state)  # raises on any shape or key mismatch
+
+
+def test_toy_main_saves_the_best_epoch_not_the_last(toy_main, monkeypatch):
+    """
+    The checkpoint is written inside `if val_loss < best_val`, so the file on
+    disk should be the best epoch's weights. Forcing the val loss to worsen
+    after the first epoch makes "best" and "last" different, which is the only
+    condition under which this assertion can fail.
+    """
+    monkeypatch.setattr(train_toy, "EPOCHS", 3)
+    losses = iter([1.0, 5.0, 9.0])
+    captured = {}
+
+    real_evaluate = train_toy.evaluate
+
+    def rising_val_loss(model, X_val, y_val, loss_fn):
+        real_evaluate(model, X_val, y_val, loss_fn)
+        loss = next(losses)
+        if loss == 1.0:
+            captured["best"] = {k: v.clone() for k, v in model.state_dict().items()}
+        return loss
+
+    monkeypatch.setattr(train_toy, "evaluate", rising_val_loss)
+    train_toy.main()
+
+    saved = torch.load(toy_main / train_toy.CHECKPOINT_PATH, weights_only=True)
+    for key, best in captured["best"].items():
+        assert torch.equal(saved[key], best), f"{key} is not from the best epoch"
+
+
+def test_toy_main_creates_output_directories_that_do_not_exist(toy_main):
+    """models/ and reports/ are both gitignored, so neither exists on a fresh clone."""
+    assert not (toy_main / "models").exists()
+    assert not (toy_main / "reports").exists()
+
+    train_toy.main()
+
+    assert (toy_main / "models").is_dir()
+    assert (toy_main / "reports").is_dir()
 
 
 # ---------------------------------------------------------------------------
