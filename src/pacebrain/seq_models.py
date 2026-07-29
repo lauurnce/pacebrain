@@ -53,7 +53,7 @@ class PacingLSTM(nn.Module):
         hidden_size: int = 64,
         num_layers: int = 1,
         dropout: float = 0.0,
-    ):
+    ) -> None:
         super().__init__()
 
         # batch_first=True means tensors are (batch, seq, features)
@@ -182,7 +182,7 @@ class PacingGRU(nn.Module):
         hidden_size: int = 64,
         num_layers: int = 1,
         dropout: float = 0.0,
-    ):
+    ) -> None:
         super().__init__()
         self.gru = nn.GRU(
             input_size,

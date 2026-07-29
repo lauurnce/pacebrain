@@ -152,7 +152,7 @@ class RunningDataset(Dataset):
         df: pd.DataFrame,
         scaler: StandardScaler | None = None,
         fit_scaler: bool = False,
-    ):
+    ) -> None:
         X = df[FEATURE_COLS].values.astype(np.float32)
         y = df[TARGET_COL].values.astype(np.float32).reshape(-1, 1)
 

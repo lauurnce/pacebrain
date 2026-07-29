@@ -29,7 +29,7 @@ class MLP(nn.Module):
         hidden_sizes: list[int],
         output_size: int = 1,
         dropout: float = 0.0,
-    ):
+    ) -> None:
         super().__init__()   # always call super().__init__() first
 
         # Annotated because the first append would otherwise fix the element
@@ -75,7 +75,7 @@ class FinishTimePredictor(MLP):
         input_size: Optional[int] = None,
         hidden_sizes: Optional[list] = None,
         dropout: float = 0.1,
-    ):
+    ) -> None:
         if input_size is None:
             input_size = self.N_FEATURES
         if hidden_sizes is None:
