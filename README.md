@@ -1,7 +1,7 @@
 # PaceBrain
 
 ML models for predicting runner race finish times and pacing strategy.
-Built with PyTorch over 10 days as a learning project tied to PacePack.
+Built with PyTorch over 11 days as a learning project tied to PacePack.
 
 ## What it does
 
@@ -154,27 +154,38 @@ Validation set, 200 rows. Every baseline is fitted on the training split only.
 | Riegel (raw) | 2, mis-specified | 28.36 | 17.8 |
 | Riegel x 0.8135 | 2, calibrated | 21.82 | 13.7 |
 | Linear regression | all 6 | 16.89 | 10.6 |
-| **Finish-time MLP** | all 6 | **4.12** | **2.6** |
+| Finish-time MLP | all 6 | 4.12 | 2.6 |
+| **Log-linear regression** | all 6, logged | **1.98** | **1.24** |
 | *Noise floor* | — | *1.60* | *1.0* |
 
-The MLP beats the strongest honest baseline (linear regression) by 75.6%. That
-is the number to quote — **not** the "85.5% vs Riegel" this table used to lead
-with, which measured the baseline's handicap more than the model's skill.
-`riegel_predict()` is algebraically the first two factors of the data generator
-and was then handed an input it was never designed for (easy training pace, not
-a previous race time). Rescaling it by a single fitted constant recovers 6.5 min
-of that, confirming the error was systematic bias rather than spread.
+**The MLP is not the best model here.** A linear regression on log-transformed
+features beats it by 51.9%, and lands within 24% of the noise floor against the
+network's 2.6x.
 
-Linear regression is the baseline that earns the MLP its place: on a target this
-well behaved a linear fit is a genuine contender, and the MLP still cuts its
-error by three quarters — the multiplicative structure of the generator is real
-nonlinearity, not noise. Two caveats stand: the target is a closed-form function
-of exactly the six input features, about the friendliest learning problem there
-is; and at 4.12 min the MLP remains 2.6x above the 1.60 min noise floor, so
-there is signal left on the table.
+That is not a tuning accident. `make_sample_data()` builds its target as a
+product of five factors, so taking logs turns it into a sum — and the fitted
+coefficients come back as the generator's own constants: 1.0556 against a true
+1.06 on log-distance, -0.007863 against -0.008 on weekly mileage, -0.014568
+against -0.015 on long run. `runs_per_week`, the one feature the generator never
+uses, comes back at 0.0017. The fit did not approximate the target; it
+recovered it.
 
-Reproduce with `python src/scratch/day10_baselines.py`. Full write-ups in
-`reports/day10_baselines.md` and `reports/day9_riegel_audit.md`.
+So the honest reading of this table is that the MLP spent 189 epochs learning an
+approximation to a relationship one `np.log` hands over exactly. Capacity
+substitutes for knowledge about the problem, and it substitutes badly. The
+network earns its place only where the right transform is *not* known in
+advance — which is the real case, and precisely the case a closed-form synthetic
+target cannot test.
+
+Worth keeping in view: every revision of this table has made the baseline
+stronger and the model's advantage smaller (85.5% at Day 5, 75.6% at Day 10,
+now negative). Day 5's number measured `riegel_predict()`'s handicap — it is
+algebraically the first two factors of the generator, then handed an input it
+was never designed for.
+
+Reproduce with `python src/scratch/day11_log_linear.py`. Full write-ups in
+`reports/day11_log_linear.md`, `reports/day10_baselines.md` and
+`reports/day9_riegel_audit.md`.
 
 ## Progress log
 
