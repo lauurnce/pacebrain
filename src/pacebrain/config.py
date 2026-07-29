@@ -10,6 +10,25 @@ from dataclasses import dataclass, field
 
 @dataclass
 class FinishPredictorConfig:
+    """
+    Every hyperparameter and path for the finish-time MLP.
+
+    Passed whole into train_finish.py, eval.py and inference.py, so the same
+    object that trained a checkpoint is the one that later rebuilds the model
+    to load it. That is the reason architecture fields live here rather than
+    as defaults on FinishTimePredictor: a checkpoint stores weights, not
+    architecture, and the two have to agree or load_state_dict raises.
+
+    Override without mutating the shared default:
+
+        import dataclasses
+        cfg = dataclasses.replace(FinishPredictorConfig(), epochs=10)
+
+    `dataclasses.replace` rather than assignment because a config is threaded
+    through several modules — editing one in place changes it for everything
+    downstream that already holds a reference.
+    """
+
     # Model architecture
     input_size: int = 6          # must match len(FEATURE_COLS) in data.py
     hidden_sizes: list = field(default_factory=lambda: [64, 32])
@@ -60,6 +79,25 @@ class FinishPredictorConfig:
 
 @dataclass
 class PacingConfig:
+    """
+    Hyperparameters and paths for the per-segment pacing model.
+
+    The sequence-model counterpart to FinishPredictorConfig, and deliberately
+    the same shape — train_pacing.py mirrors train_finish.py almost line for
+    line, which only stays true if the configs do too.
+
+    Two fields differ in kind rather than value. `cell` selects the recurrent
+    architecture at construction time rather than being a separate config
+    class, so an LSTM and a GRU run can be compared by changing one string.
+    `dropout` applies only *between* stacked layers, so it does nothing at the
+    default num_layers=1 — PyTorch warns about exactly this combination.
+
+    Override the same way:
+
+        import dataclasses
+        cfg = dataclasses.replace(PacingConfig(), cell="gru")
+    """
+
     # Recurrent cell: "lstm" or "gru". The GRU has ~25% fewer parameters at
     # the same hidden size (13,889 vs 18,497 at hidden_size=64).
     # See reports/gru_vs_lstm.md for how they actually compare here.
