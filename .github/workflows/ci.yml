@@ -7,10 +7,22 @@ on:
     branches: [main]
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
   # Superseding an in-flight run is right for a PR branch, where only the tip
   # matters. On main it is not: during a merge queue each new merge cancelled
   # the previous run, so several commits landed without ever getting a verdict.
+  #
+  # That was first addressed with cancel-in-progress alone, and it did not
+  # hold — a batch of 12 rapid merges on 2026-07-29 cancelled 10 consecutive
+  # push runs on main, each killed within ~11s having dispatched zero jobs,
+  # which is the signature of a concurrency supersede rather than a failure.
+  #
+  # So the guarantee is moved into the group key instead of relying on
+  # cancel-in-progress evaluating the way it reads. Including the SHA for
+  # push events puts every main commit in a group of its own, where there is
+  # nothing to supersede it — true regardless of how the boolean below is
+  # coerced. Pull request events keep a per-ref group, so pushing a new commit
+  # to a PR still supersedes its own previous run.
+  group: ci-${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'push' && github.sha || '' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
