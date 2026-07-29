@@ -55,9 +55,17 @@ show_missing = true
 # The floor is set just below where the package actually sits, so it catches
 # a real regression without failing the build for rounding. Raise it as
 # coverage improves — the point of a ratchet is that it only goes one way.
-# Currently the three training modules are the entire gap; everything that
-# is imported rather than executed as a script is at or near 100%.
-fail_under = 55
+#
+# 55 was set when the package was at 88% and the three training modules were
+# the whole gap. They are now covered, along with eval.py's orchestrator and
+# train.py's main(), and the package sits at 99.14%. A 44-point gap between
+# floor and actual is not a ratchet, it is a floor nothing can ever hit:
+# coverage could have halved without CI noticing.
+#
+# 97 leaves roughly 24 statements of headroom on 813. That is enough that
+# adding a genuinely awkward branch does not block a PR, and tight enough
+# that deleting a test file does.
+fail_under = 97
 exclude_lines = [
     "pragma: no cover",
     # Several modules double as runnable scripts (python src/pacebrain/eval.py)

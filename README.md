@@ -40,7 +40,7 @@ pip install -e ".[dev]"
 pytest          # 233 tests
 ruff check .
 mypy            # type-checks src/pacebrain
-pytest --cov    # coverage report; CI enforces a 55% floor
+pytest --cov    # coverage report; CI enforces a 97% floor
 ```
 
 Optionally install the git hooks, which run the same lint on commit and the
