@@ -37,7 +37,7 @@ To work on the project itself (tests and linting), install the dev extras instea
 
 ```bash
 pip install -e ".[dev]"
-pytest          # 233 tests
+pytest          # full suite
 ruff check .
 mypy            # type-checks src/pacebrain
 pytest --cov    # coverage report; CI enforces a 97% floor
