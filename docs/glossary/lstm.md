@@ -9,3 +9,5 @@ Long short-term memory: a recurrent neural network cell that keeps a separate ce
 - [Exploding gradient](exploding-gradient.md)
 - [Gradient clipping](gradient-clipping.md)
 - [Vanishing gradient](vanishing-gradient.md)
+
+In PaceBrain, `PacingLSTM` (`src/pacebrain/seq_models.py`) runs an `nn.LSTM` over a race one segment at a time and puts a linear head on the hidden state at every step, so it predicts a pace per segment rather than a single finish time. The defaults are one layer and a hidden size of 64, which is 18,497 parameters; `dropout` only takes effect between stacked layers.
