@@ -225,3 +225,24 @@ def test_run_evaluation_scores_baseline_on_the_same_rows_as_the_model(
 
     expected = int(trained_checkpoint.n_samples * trained_checkpoint.val_fraction)
     assert f"Samples : {expected}" in capsys.readouterr().out
+
+
+def test_run_evaluation_reports_the_model_winning(
+    trained_checkpoint, tmp_path, monkeypatch, capsys
+):
+    """
+    The counterpart to the untrained-model tests above. An untrained checkpoint
+    never beats Riegel, so the winning branch of the verdict was the one thing
+    nothing reached. Make the baseline wildly wrong and the MLP wins by default.
+    """
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        "pacebrain.eval.riegel_predict",
+        lambda pace, distance, *args, **kwargs: np.full(len(pace), 1e6),
+    )
+
+    run_evaluation(trained_checkpoint)
+
+    out = capsys.readouterr().out
+    assert "MLP beats Riegel by" in out
+    assert "Riegel beats MLP" not in out
