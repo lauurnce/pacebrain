@@ -7,3 +7,5 @@ Gated recurrent unit: a recurrent cell that folds the LSTM's hidden and cell sta
 - [Activation function](activation-function.md)
 - [Sigmoid](sigmoid.md)
 - [Vanishing gradient](vanishing-gradient.md)
+
+In PaceBrain, `PacingGRU` (`src/pacebrain/seq_models.py`) has the same interface as `PacingLSTM` and is selected with `PacingConfig(cell="gru")`. At hidden size 64 it has 13,889 parameters against the LSTM's 18,497, about 25% fewer. It is a separate class rather than a flag on the LSTM so that a saved state dict records which architecture wrote it.
