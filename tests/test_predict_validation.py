@@ -208,3 +208,19 @@ def test_cli_stays_silent_for_typical_input(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert captured.err == ""
     assert "Predicted time" in captured.out
+
+
+# --- bucket 1: days_since_long_run has its own finite check ---------------
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_non_finite_days_since_long_run_rejected(value):
+    """
+    Zero is legal here, so this field is screened separately from the five
+    magnitudes rather than by the `<= 0` rule. nan compares False against every
+    bound and inf sails past `< 0`, so without the isfinite check either would
+    reach the model, and -inf must be reported as non-finite, not as negative.
+    """
+    errors = validate_inputs(**args_with(days_since_long_run=value))
+    assert len(errors) == 1
+    assert "--days-since-long-run" in errors[0]
+    assert "finite" in errors[0]
