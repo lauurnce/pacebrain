@@ -62,10 +62,17 @@ show_missing = true
 # floor and actual is not a ratchet, it is a floor nothing can ever hit:
 # coverage could have halved without CI noticing.
 #
-# 97 leaves roughly 24 statements of headroom on 813. That is enough that
-# adding a genuinely awkward branch does not block a PR, and tight enough
-# that deleting a test file does.
-fail_under = 97
+# 97 left roughly 24 statements of headroom on 813, enough that adding a
+# genuinely awkward branch did not block a PR and tight enough that deleting
+# a test file did.
+#
+# The last uncovered lines and branches have since been closed (the
+# non-finite --days-since-long-run check, the model-beats-Riegel verdict, the
+# learning-rate drop message and the no-statistics path of both sequence
+# datasets), so the package sits at 100%, which made 97 three points of
+# slack. 99 leaves roughly 8 statements of headroom on 815, which still
+# absorbs one genuinely awkward branch without blocking a PR.
+fail_under = 99
 exclude_lines = [
     "pragma: no cover",
     # Several modules double as runnable scripts (python src/pacebrain/eval.py)
