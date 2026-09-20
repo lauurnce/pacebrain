@@ -123,6 +123,49 @@ def test_pacing_training_runs_with_the_schedule_enabled(tmp_path):
     assert train_pacing.train(pacing_cfg) is not None
 
 
+def test_pacing_training_announces_each_lr_drop(tmp_path, monkeypatch, capsys):
+    """
+    A constant validation loss is a permanent plateau, so with lr_patience=1 the
+    scheduler must cut the LR by lr_factor, and train() must say so: the printed
+    line is the only place a run records that the schedule acted.
+    """
+    monkeypatch.setattr(train_pacing, "evaluate", lambda *a, **k: 5.0)
+    pacing_cfg = PacingConfig(
+        n_races=40,
+        epochs=5,
+        batch_size=8,
+        patience=100,
+        lr_schedule=True,
+        lr_patience=1,
+        lr_factor=0.5,
+        checkpoint_path=str(tmp_path / "pm.pt"),
+        plot_path=str(tmp_path / "pp.png"),
+    )
+
+    train_pacing.train(pacing_cfg)
+
+    assert "LR 1.00e-03 -> 5.00e-04" in capsys.readouterr().out
+
+
+def test_pacing_training_prints_no_lr_line_when_the_schedule_is_off(
+    tmp_path, monkeypatch, capsys
+):
+    monkeypatch.setattr(train_pacing, "evaluate", lambda *a, **k: 5.0)
+    pacing_cfg = PacingConfig(
+        n_races=40,
+        epochs=5,
+        batch_size=8,
+        patience=100,
+        lr_schedule=False,
+        checkpoint_path=str(tmp_path / "pm.pt"),
+        plot_path=str(tmp_path / "pp.png"),
+    )
+
+    train_pacing.train(pacing_cfg)
+
+    assert ": LR " not in capsys.readouterr().out
+
+
 # ---------------------------------------------------------------------------
 # helper
 # ---------------------------------------------------------------------------
